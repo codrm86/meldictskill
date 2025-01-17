@@ -64,7 +64,7 @@ async def upload_websounds(skill: Skill):
     websounds_folder = config.data.websounds_folder
     for f in os.listdir(websounds_folder):
         try:
-            sound_file = os.path.relpath(websounds_folder, f)
+            sound_file = os.path.join(websounds_folder, f)
             logging.info(f"Загрузка звука {sound_file}")
 
             fsfile = FSInputFile(sound_file)
