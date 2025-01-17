@@ -1,0 +1,25 @@
+{
+    "network":{
+        "ip": "127.0.0.1",
+        "port": 5000,
+        "path": "meldict",
+        "ssl": {
+            "enabled": false,
+            "certfile": "meldict.crt",
+            "keyfile": "meldict.key"
+        }
+    },
+    "data":{
+        "upload_websounds": true,
+        "websounds_folder": "sounds",
+        "websounds_csv": "websounds.csv",
+        "main_csv": "main.csv"
+    },
+    "skill": {
+        "id": "7924d0ec-5ba2-4ca3-af7d-a7435df0ba83",
+        "oauth_token": ""
+    },
+    "debug":{
+        "enabled": false
+    }
+}
