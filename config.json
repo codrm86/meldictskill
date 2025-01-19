@@ -10,16 +10,16 @@
         }
     },
     "data":{
-        "upload_websounds": true,
+        "upload_websounds": false,
         "websounds_folder": "sounds",
         "websounds_csv": "websounds.csv",
         "main_csv": "main.csv"
     },
     "skill": {
         "id": "7924d0ec-5ba2-4ca3-af7d-a7435df0ba83",
-        "oauth_token": ""
+        "oauth_token": "y0__wgBEMe57vECGKP3EyDys-TuEd69UqPDcm0Ce6LjVdCwPhipPKZ8"
     },
     "debug":{
-        "enabled": false
+        "enabled": true
     }
 }

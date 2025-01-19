@@ -18,7 +18,8 @@ class MusicNoteSequence(Sequence):
                  base_chord: str = None,
                  chord_str: str = None,
                  interval_str: str = None,
-                 major: bool = False,
+                 tonality_maj: bool = False,
+                 chord_maj: bool = False,
                  prima_location: str | int = None,
                  inversion: str | int = None):
         super().__init__()
@@ -33,7 +34,8 @@ class MusicNoteSequence(Sequence):
         self.__inversion = MusicNoteSequence.INVERSION_UNKNOWN
         self.__is_tonic = self.__is_dominant = self.__is_subdominant = False
         self.__is_vertical = vertical == True
-        self.__is_major = major == True
+        self.__is_tonality_maj = tonality_maj == True
+        self.__is_chord_maj = chord_maj == True
 
         # parse prima location
         if isinstance(prima_location, str):
@@ -80,7 +82,9 @@ class MusicNoteSequence(Sequence):
     @property
     def is_vertical(self) -> bool: return self.__is_vertical
     @property
-    def is_major(self) -> bool: return self.__is_major
+    def is_tonality_maj(self) -> bool: return self.__is_tonality_maj
+    @property
+    def is_chord_maj(self) -> bool: return self.__is_chord_maj
     @property
     def title(self) -> str: return self.__title
     @property
@@ -93,9 +97,6 @@ class MusicNoteSequence(Sequence):
     def inversion_str(self) -> str: return MusicNoteSequence.__inversion_int_to_str(self.__inversion)
     @property
     def file_name(self) -> str: return MusicNoteSequence.__get_file_name(self.__is_vertical, self)
-
-    def __or__(self, value):
-        return super().__or__(value)
 
     def __iter__(self):
         self.__note_index = 0
@@ -114,6 +115,9 @@ class MusicNoteSequence(Sequence):
 
     def __len__(self):
         return len(self.__notes)
+    
+    def __str__(self):
+        return "".join(str(note) for note in self.__notes)
 
     @staticmethod
     def __get_file_name(vertical: bool, notes: Iterable[MusicNote]) -> str:
@@ -191,11 +195,13 @@ class MusicNoteSequence(Sequence):
 
         for i, note in enumerate(notes):
             if isinstance(note, str):
-                if len(note) == 0: continue
+                if len(note) == 0: # note is str
+                    missed = i
+                    continue
                 note = MusicNote(note)
                 notes_list.append(note)
             elif isinstance(note, MusicNote):
-                notes_list.append(note)
+                notes_list.append(note) # note is MusicNote
             else:
                 missed = i
                 continue
@@ -203,4 +209,4 @@ class MusicNoteSequence(Sequence):
             ascending = ascending and (prev_note is None or prev_note < note)
             prev_note = note
 
-        return (ascending, missed, tuple(notes_list))
+        return ascending, missed, tuple(notes_list)

@@ -1,7 +1,7 @@
-import os
-import pandas as pd
+import threading
 import logging
 import time
+import traceback as tb
 from config import Config
 from types import SimpleNamespace as dynamic
 from aliceio import Dispatcher, Skill, Router, F
@@ -14,6 +14,7 @@ from myfilters import *
 from myconstants import *
 
 dispatcher = Dispatcher()
+rlock = threading.RLock()
 
 def get_data_key(message: Message) -> str:
     return f"{message.session.session_id}"
@@ -35,15 +36,20 @@ async def get_engine(message: Message, state: FSMContext, force_create: bool = F
                 if key != engine_key and now - value[1] >= 600: # последняя активность 10 минут назад и более
                   remove.append(key)
 
-            for key in remove:
-                data.pop(key)
+            with rlock:
+                for key in remove:
+                    data.pop(key)
         else:
             v = data.get(engine_key)
             if v:
                 engine = v[0]
-                data[engine_key] = (engine, time.time()) # сброс времени последней активности
+                with rlock: data[engine_key] = (engine, time.time()) # сброс времени последней активности
 
         return engine
+
+def format_error(text: str, e: Exception) -> str:
+    return text if not Config().debug.enabled \
+        else f"{text}\n\n#DEBUG\n\n{tb.format_exception(e)}"
 
 @dispatcher.message(F.session.new)
 async def start_session(message: Message, state: FSMContext) -> AliceResponse:
@@ -53,25 +59,63 @@ async def start_session(message: Message, state: FSMContext) -> AliceResponse:
         text, tts = engine.get_reply()
     except Exception as e:
         logging.error(message.command, exc_info=e)
-        text = tts = AliceReplies.SOMETHING_WENT_WRONG
+        tts = AliceReplies.SOMETHING_WENT_WRONG
+        text = format_error(tts, e)
 
     return AliceResponse(response=Response(text=text, tts=tts))
 
+
 @dispatcher.message(CmdFilter(("меню", "перезапус"), exclude="нет"))
-async def menu_message_handler(message: Message, state: FSMContext) -> AliceResponse:
+async def menu_message_handler(message: Message, state: FSMContext, engine: MelDictEngineAlice = None) -> AliceResponse:
+    text = tts = ""
+    try:
+        engine = engine if engine else await get_engine(message, state)
+        if engine is None: # сообщение пришло без создания сессии
+            return await start_session(message, state)
+
+        engine.mode = GameMode.MENU # engine.reset()
+        text, tts = engine.get_reply()
+    except Exception as e:
+        logging.error(message.command, exc_info=e)
+        tts = AliceReplies.SOMETHING_WENT_WRONG
+        text = format_error(tts, e)
+
+    return AliceResponse(response=Response(text=text, tts=tts))
+
+
+@dispatcher.message(CmdFilter(("статист", "балл", "оценк"), exclude="нет"))
+async def stats_message_handler(message: Message, state: FSMContext) -> AliceResponse:
     text = tts = ""
     try:
         engine = await get_engine(message, state)
         if engine is None: # сообщение пришло без создания сессии
             return await start_session(message, state)
 
-        engine.reset()
-        text, tts = engine.get_reply()
+        text, tts = engine.get_stats_reply()
     except Exception as e:
         logging.error(message.command, exc_info=e)
-        text = tts = AliceReplies.SOMETHING_WENT_WRONG
+        tts = AliceReplies.SOMETHING_WENT_WRONG
+        text = format_error(tts, e)
 
     return AliceResponse(response=Response(text=text, tts=tts))
+
+
+@dispatcher.message(CmdFilter(("конец", "закончи", "заканчивай", "выход", "стоп", "останови"), exclude="нет"))
+async def end_message_handler(message: Message, state: FSMContext) -> AliceResponse:
+    text = tts = ""
+    try:
+        engine = await get_engine(message, state)
+        if engine and engine.mode == GameMode.TASK:
+            return await menu_message_handler(message, state, engine=engine)
+        
+        text = tts = AliceReplies.BYEBYE
+    except Exception as e:
+        logging.error(message.command, exc_info=e)
+        tts = AliceReplies.SOMETHING_WENT_WRONG
+        text = format_error(tts, e)
+
+    return AliceResponse(response=Response(text=text, tts=tts, end_session=True))
+
 
 @dispatcher.message()
 async def message_handler(message: Message, state: FSMContext) -> AliceResponse:
@@ -86,6 +130,7 @@ async def message_handler(message: Message, state: FSMContext) -> AliceResponse:
         if text is None: text, tts = engine.get_reply()
     except Exception as e:
         logging.error(message.command, exc_info=e)
-        text = tts = AliceReplies.SOMETHING_WENT_WRONG
+        tts = AliceReplies.SOMETHING_WENT_WRONG
+        text = format_error(tts, e)
 
     return AliceResponse(response=Response(text=text, tts=tts))

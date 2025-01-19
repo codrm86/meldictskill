@@ -12,6 +12,7 @@ import asyncio
 import ssl
 import logging
 import meldicthandlers as md
+from myconstants import *
 
 def configure_logger() -> logging.Logger:
     # Создаем объект логгера
@@ -19,7 +20,7 @@ def configure_logger() -> logging.Logger:
     logger.setLevel(logging.INFO)
 
     # Создаем обработчик для записи лога в файл
-    file_handler = logging.FileHandler("meldict_skill.log", encoding="utf-8")
+    file_handler = logging.FileHandler("meldict_skill.log", encoding=UTF8)
     file_handler.setLevel(logging.INFO)
 
     # Форматирование логов
@@ -30,7 +31,6 @@ def configure_logger() -> logging.Logger:
 
     # Добавляем обработчик к логгеру
     logger.addHandler(file_handler)
-    md.logger = logger
     return logger
 
 
@@ -61,6 +61,7 @@ async def upload_websounds(skill: Skill):
     count = 0
 
     # загружаем все звуки из папки sounds
+    logging.info(f"Загрузка звуков в облачное хранилище навыка")
     websounds_folder = config.data.websounds_folder
     for f in os.listdir(websounds_folder):
         try:

@@ -7,7 +7,7 @@ from myconstants import *
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-# Потокобезопасный синглтон для конфигурации
+# Потокобезопасный синглтон
 class SingletonMeta(type(BaseModel)):
     _instance = None
     _lock = threading.Lock()
@@ -20,7 +20,7 @@ class SingletonMeta(type(BaseModel)):
                 cls._instance = super().__call__(*args, **kwargs)
             return cls._instance
 
-# Pydantic модели для конфигурации
+# Pydantic модели конфигов
 class SSLConfig(BaseModel):
     enabled: bool = Field(False, description="Включить или отключить SSL")
     certfile: str = Field("", description="Путь к файлу сертификата SSL")
@@ -33,10 +33,10 @@ class NetworkConfig(BaseModel):
     ssl: SSLConfig = Field(default_factory=SSLConfig, description="Настройки SSL")
 
 class DataConfig(BaseModel):
-    upload_websounds: bool = Field(False, description="Разрешить загрузку звуков")
-    websounds_folder: str = Field("sounds", description="Папка для звуков")
-    websounds_csv: str = Field("websounds.csv", description="CSV-файл для звуков")
-    main_csv: str = Field("main.csv", description="Основной CSV-файл")
+    upload_websounds: bool = Field(False, description="Флаг, указывающий на необходимость загрузки звуков в облачное хранилище навыка при запуске сервера")
+    websounds_folder: str = Field("sounds", description="Папка со звуковыми файлами")
+    websounds_csv: str = Field("websounds.csv", description="CSV-файл с облачными идентификаторами загруженных звуков")
+    main_csv: str = Field("main.csv", description="Основной CSV-файл с аккордами и интервалами")
 
 class SkillConfig(BaseModel):
     id: str = Field("", description="Идентификатор навыка")
@@ -55,11 +55,21 @@ class Config(BaseModel, metaclass=SingletonMeta):
     @classmethod
     def load(cls, config_path: str):
         """Загружает и валидирует конфигурацию из JSON-файла."""
-        logging.info("Загрузка конфигурации")
-        config_data = None
-        with open(config_path, "r", encoding=UTF8) as file:
-            config_data = json.load(file)
-        return cls(**config_data)
+        try:
+            logging.info("Загрузка конфигурации")
+            config_data = None
+
+            with open(config_path, "r", encoding=UTF8) as file:
+                config_data = json.load(file)
+
+            config = cls(**config_data)
+            logging.info("Конфигурация загружена")
+
+            return config
+        except Exception:
+            logging.error("Конфигурация не загружена")
+            raise
+
 
 # Обработчик событий для Watchdog
 class ConfigHandler(FileSystemEventHandler):
@@ -74,7 +84,6 @@ class ConfigHandler(FileSystemEventHandler):
             except Exception as e:
                 logging.error(f"Ошибка при перезагрузке конфигурации", exc_info=e)
 
-# Функция для запуска наблюдателя
 def start_config_watcher(config_path: str):
     """Запускает наблюдателя для отслеживания изменений конфигурационного файла."""
     event_handler = ConfigHandler(config_path)

@@ -1,200 +1,199 @@
-name;base_chord;note_1;note_2;note_3;vertical;tonality_maj;chord_type;order;prima_location;inversion;interval;NN;mel_desc;sci_not;sci_uniq
-C_I;C_I;C4;E4;G4;True;True;Тоническое трезвучие;0;Внизу;Основной вид;;1;False;C4_E4_G4;C4_E4_G4_ver
-C_E_maj3_C_I;C_I;C4;E4;;True;True;;;;;Большая терция;2;False;C4_E4;C4_E4_ver
-E_G_min3_C_I;C_I;;E4;G4;True;True;;;;;Малая терция;3;False;E4_G4;E4_G4_ver
-C_G_perf5_C_I;C_I;C4;;G4;True;True;;;;;Квинта;4;False;C4_G4;C4_G4_ver
-C_I6;C_I6;E4;G4;C5;True;True;Тонический секстаккорд;0;Наверху;Первое обращение;;5;False;E4_G4_C5;E4_G4_C5_ver
-E_G_maj3_C_I6;C_I6;E4;G4;;True;True;;;;;Большая терция;6;False;E4_G4;E4_G4_ver
-G_C_perf4_C_I6;C_I6;;G4;C5;True;True;;;;;Кварта;7;False;G4_C5;G4_C5_ver
-E_C_min6_C_I6;C_I6;E4;;C5;True;True;;;;;Малая секста;8;False;E4_C5;E4_C5_ver
-C_I64;C_I64;G4;C5;E5;True;True;Тонический квартсекстаккорд;0;В середине;Второе обращение;;9;False;G4_C5_E5;G4_C5_E5_ver
-G_C_perf4_C_I64;C_I64;G4;C5;;True;True;;;;;Кварта;10;False;G4_C5;G4_C5_ver
-C_E_maj3_C_I64;C_I64;;C5;E5;True;True;;;;;Большая терция;11;False;C5_E5;C5_E5_ver
-G_E_maj6_C_I64;C_I64;G4;;E5;False;True;;;;;Большая секста;12;False;G4_E5;G4_E5
-C_I_arp;C_I_arp;C4;E4;G4;False;True;Тоническое трезвучие;1;Внизу;Основной вид;;13;False;C4_E4_G4;C4_E4_G4
-C_E_maj3_C_I_mel;C_I_arp;C4;E4;;False;True;;;;;Большая терция;14;False;C4_E4;C4_E4
-E_G_min3_C_I_mel;C_I_arp;;E4;G4;False;True;;;;;Малая терция;15;False;E4_G4;E4_G4
-C_G_perf5_C_I_mel;C_I_arp;C4;;G4;False;True;;;;;Квинта;16;False;C4_G4;C4_G4
-C_I6_arp;C_I6_arp;E4;G4;C5;False;True;Тонический секстаккорд;2;Наверху;Первое обращение;;17;False;E4_G4_C5;E4_G4_C5
-E_G_maj3_C_I6_mel;C_I6_arp;E4;G4;;False;True;;;;;Большая терция;18;False;E4_G4;E4_G4
-G_C_perf4_C_I6_mel;C_I6_arp;;G4;C5;False;True;;;;;Кварта;19;False;G4_C5;G4_C5
-E_C_min6_C_I6_mel;C_I6_arp;E4;;C5;False;True;;;;;Малая секста;20;False;E4_C5;E4_C5
-C_I64_arp;C_I64_arp;G4;C5;E5;False;True;Тонический квартсекстаккорд;3;В середине;Второе обращение;;21;False;G4_C5_E5;G4_C5_E5
-G_C_perf4_C_I64_mel;C_I64_arp;G4;C5;;False;True;;;;;Кварта;22;False;G4_C5;G4_C5
-C_E_maj3_C_64_mel;C_I64_arp;;C5;E5;False;True;;;;;Большая терция;23;False;C5_E5;C5_E5
-G_E_maj6_C_I64_mel;C_I64_arp;G4;;E5;False;True;;;;;Большая секста;24;False;G4_E5;G4_E5
-F_IV;F_IV;F4;A4;C5;True;True;Субдоминантовое трезвучие;0;Внизу;Основной вид;;25;False;F4_A4_C5;F4_A4_C5_ver
-F_A_maj3_F_IV;F_IV;F4;A4;;True;True;;;;;Большая терция;26;False;F4_A4;F4_A4_ver
-A_C_min3_F_IV;F_IV;;A4;C5;True;True;;;;;Малая терция;27;False;A4_C5;A4_C5_ver
-F_C_perf5_F_IV;F_IV;F4;;C5;True;True;;;;;Квинта;28;False;F4_C5;F4_C5_ver
-F_IV6;F_IV6;A4;C5;F5;True;True;Субдоминантовый секстаккорд;0;Наверху;Первое обращение;;29;False;A4_C5_F5;A4_C5_F5_ver
-A_C_min3_F_IV6;F_IV6;A4;C5;;True;True;;;;;Малая терция;30;False;A4_C5;A4_C5_ver
-C_F_perf4_F_IV6;F_IV6;;C5;F5;True;True;;;;;Кварта;31;False;C5_F5;C5_F5_ver
-A_F_min6_F_IV6;F_IV6;A4;;F5;True;True;;;;;Малая секста;32;False;A4_F5;A4_F5_ver
-F_IV64;F_IV64;C5;F5;A5;True;True;Субдоминантовый квартсекстаккорд;0;В середине;Второе обращение;;33;False;C5_F5_A5;C5_F5_A5_ver
-C_F_perf4_F_IV64;F_IV64;C5;F5;;True;True;;;;;Кварта;34;False;C5_F5;C5_F5_ver
-F_A_maj3_F_IV64;F_IV64;;F5;A5;True;True;;;;;Большая терция;35;False;F5_A5;F5_A5_ver
-C_A_maj6_F_IV64;F_IV64;C4;;A5;True;True;;;;;Большая секста;36;False;C4_A5;C4_A5_ver
-F_IV_arp;F_IV_arp;F4;A4;C5;False;True;Субдоминантовое трезвучие;4;Внизу;Основной вид;;37;False;F4_A4_C5;F4_A4_C5
-F_A_maj3_F_IV_mel;F_IV_arp;F4;A4;;False;True;;;;;Большая терция;38;False;F4_A4;F4_A4
-A_C_min3_F_IV_mel;F_IV_arp;;A4;C5;False;True;;;;;Малая терция;39;False;A4_C5;A4_C5
-F_C_perf5_F_IV_mel;F_IV_arp;F4;;C5;False;True;;;;;Квинта;40;False;F4_C5;F4_C5
-F_IV6_arp;F_IV6_arp;A4;C5;F5;False;True;Субдоминантовый секстаккорд;5;Наверху;Первое обращение;;41;False;A4_C5_F5;A4_C5_F5
-A_C_min3_F_IV6_mel;F_IV6_arp;A4;C5;;False;True;;;;;Малая терция;42;False;A4_C5;A4_C5
-C_F_perf4_F_IV6_mel;F_IV6_arp;;C5;F5;False;True;;;;;Кварта;43;False;C5_F5;C5_F5
-A_F_min6_F_IV6_mel;F_IV6_arp;A4;;F5;False;True;;;;;Малая секста;44;False;A4_F5;A4_F5
-F_IV64_arp;F_IV64_arp;C5;F5;A5;False;True;Субдоминантовый квартсекстаккорд;6;В середине;Второе обращение;;45;False;C5_F5_A5;C5_F5_A5
-C_F_perf4_F_IV64_mel;F_IV64_arp;C5;F5;;False;True;;;;;Кварта;46;False;C5_F5;C5_F5
-F_A_maj3_F_IV64_mel;F_IV64_arp;;F5;A5;False;True;;;;;Большая терция;47;False;F5_A5;F5_A5
-C_A_maj6_F_IV64_mel;F_IV64_arp;C4;;A5;False;True;;;;;Большая секста;48;False;C4_A5;C4_A5
-G_V;G_V;G4;B4;D5;True;True;Доминантовое трезвучие;0;Внизу;Основной вид;;49;False;G4_B4_D5;G4_B4_D5_ver
-G_B_maj3_G_V;G_V;G4;B4;;True;True;;;;;Большая терция;50;False;G4_B4;G4_B4_ver
-B_D_min3_G_V;G_V;;B4;D5;True;True;;;;;Малая терция;51;False;B4_D5;B4_D5_ver
-G_D_perf5_G_V;G_V;G4;;D5;True;True;;;;;Квинта;52;False;G4_D5;G4_D5_ver
-G_V6;G_V6;B4;D5;G5;True;True;Доминантовый секстаккорд;0;Наверху;Первое обращение;;53;False;B4_D5_G5;B4_D5_G5_ver
-B_D_min3_G_V6;G_V6;B4;D5;;True;True;;;;;Малая терция;54;False;B4_D5;B4_D5_ver
-D_G_perf4_G_V6;G_V6;;D5;G5;True;True;;;;;Кварта;55;False;D5_G5;D5_G5_ver
-B_D_min6_G_V6;G_V6;B4;;G5;True;True;;;;;Малая секста;56;False;B4_G5;B4_G5_ver
-G_V64;G_V64;D5;G5;B5;True;True;Доминантовый квартсекстаккорд;0;В середине;Второе обращение;;57;False;D5_G5_B5;D5_G5_B5_ver
-D_G_perf4_G_V64;G_V64;D5;G5;;True;True;;;;;Кварта;58;False;D5_G5;D5_G5_ver
-G_B_maj3_G_V64;G_V64;;G5;B5;True;True;;;;;Большая терция;59;False;G5_B5;G5_B5_ver
-D_B_maj6_G_V64;G_V64;D4;;B5;True;True;;;;;Большая секста;60;False;D4_B5;D4_B5_ver
-G_V_arp;G_V_arp;G4;B4;D5;False;True;Доминантовое трезвучие;7;Внизу;Основной вид;;61;False;G4_B4_D5;G4_B4_D5
-G_B_maj3_G_V_mel;G_V_arp;G4;B4;;False;True;;;;;Большая терция;62;False;G4_B4;G4_B4
-B_D_min3_G_V_mel;G_V_arp;;B4;D5;False;True;;;;;Малая терция;63;False;B4_D5;B4_D5
-G_D_perf5_G_V_mel;G_V_arp;G4;;D5;False;True;;;;;Квинта;64;False;G4_D5;G4_D5
-G_V6_arp;G_V6_arp;B4;D5;G5;False;True;Доминантовый секстаккорд;8;Наверху;Первое обращение;;65;False;B4_D5_G5;B4_D5_G5
-B_D_min3_G_V6_mel;G_V6_arp;B4;D5;;False;True;;;;;Малая терция;66;False;B4_D5;B4_D5
-D_G_perf4_G_V6_mel;G_V6_arp;;D5;G5;False;True;;;;;Кварта;67;False;D5_G5;D5_G5
-B_D_min6_G_V6_mel;G_V6_arp;B4;;G5;False;True;;;;;Малая секста;68;False;B4_G5;B4_G5
-G_V64_arp;G_V64_arp;D5;G5;B5;False;True;Доминантовый квартсекстаккорд;9;В середине;Второе обращение;;69;False;D5_G5_B5;D5_G5_B5
-D_G_perf4_G_V64_mel;G_V64_arp;D5;G5;;False;True;;;;;Кварта;70;False;D5_G5;D5_G5
-G_B_maj3_G_V64_mel;G_V64_arp;;G5;B5;False;True;;;;;Большая терция;71;False;G5_B5;G5_B5
-D_B_maj6_G_V64_mel;G_V64_arp;D4;;B5;False;True;;;;;Большая секста;72;False;D4_B5;D4_B5
-Am_I;Am_I;A3;C4;E4;True;False;Тоническое трезвучие;0;Внизу;Основной вид;;73;False;A3_C4_E4;A3_C4_E4_ver
-A_C_min3_Am_I;Am_I;A3;C4;;True;False;;;;;Малая терция;74;False;A3_C4;A3_C4_ver
-C_E_maj3_Am_I;Am_I;;C4;E4;True;False;;;;;Большая терция;75;False;C4_E4;C4_E4_ver
-A_E_perf5_Am_I;Am_I;A3;;E4;True;False;;;;;Квинта;76;False;A3_E4;A3_E4_ver
-Am_I6;Am_I6;C4;E4;A4;True;False;Тонический секстаккорд;0;Наверху;Первое обращение;;77;False;C4_E4_A4;C4_E4_A4_ver
-C_E_maj3_Am_I6;Am_I6;C4;E4;;True;False;;;;;Большая терция;78;False;C4_E4;C4_E4_ver
-E_A_perf4_Am_I6;Am_I6;;E4;A4;True;False;;;;;Кварта;79;False;E4_A4;E4_A4_ver
-C_A_maj6_Am_I6;Am_I6;C4;;A4;True;False;;;;;Большая секста;80;False;C4_A4;C4_A4_ver
-Am_I64;Am_I64;E4;A4;C5;True;False;Тонический квартсекстаккорд;0;В середине;Второе обращение;;81;False;E4_A4_C5;E4_A4_C5_ver
-E_A_perf4_Am_I64;Am_I64;E4;A4;;True;False;;;;;Кварта;82;False;E4_A4;E4_A4_ver
-A_C_min3_Am_I64;Am_I64;;A4;C5;True;False;;;;;Малая терция;83;False;A4_C5;A4_C5_ver
-E_C_min6_Am_I64;Am_I64;E4;;C5;True;False;;;;;Малая секста;84;False;E4_C5;E4_C5_ver
-Am_I_arp;Am_I_arp;A3;C4;E4;False;False;Тоническое трезвучие;1;Внизу;Основной вид;;85;False;A3_C4_E4;A3_C4_E4
-A_C_min3_Am_I_mel;Am_I_arp;A3;C4;;False;False;;;;;Малая терция;86;False;A3_C4;A3_C4
-C_E_maj3_Am_I_mel;Am_I_arp;;C4;E4;False;False;;;;;Большая терция;87;False;C4_E4;C4_E4
-A_E_perf5_Am_I_mel;Am_I_arp;A3;;E4;False;False;;;;;Квинта;88;False;A3_E4;A3_E4
-Am_I6_arp;Am_I6_arp;C4;E4;A4;False;False;Тонический секстаккорд;2;Наверху;Первое обращение;;89;False;C4_E4_A4;C4_E4_A4
-C_E_maj3_Am_I6_mel;Am_I6_arp;C4;E4;;False;False;;;;;Большая терция;90;False;C4_E4;C4_E4
-E_A_perf4_Am_I6_mel;Am_I6_arp;;E4;A4;False;False;;;;;Кварта;91;False;E4_A4;E4_A4
-C_A_maj6_Am_I6_mel;Am_I6_arp;C4;;A4;False;False;;;;;Большая секста;92;False;C4_A4;C4_A4
-Am_I64_arp;Am_I64_arp;E4;A4;C5;False;False;Тонический квартсекстаккорд;3;В середине;Второе обращение;;93;False;E4_A4_C5;E4_A4_C5
-E_A_perf4_Am_I64_mel;Am_I64_arp;E4;A4;;False;False;;;;;Кварта;94;False;E4_A4;E4_A4
-A_C_min3_Am_I64_mel;Am_I64_arp;;A4;C5;False;False;;;;;Малая терция;95;False;A4_C5;A4_C5
-E_C_min6_Am_I64_mel;Am_I64_arp;E4;;C5;False;False;;;;;Малая секста;96;False;E4_C5;E4_C5
-Dm_IV;Dm_IV;D4;F4;A4;True;False;Субдоминантовое трезвучие;0;Внизу;Основной вид;;97;False;D4_F4_A4;D4_F4_A4_ver
-D_F_min3_Dm_IV;Dm_IV;D4;F4;;True;False;;;;;Малая терция;98;False;D4_F4;D4_F4_ver
-F_A_maj3_Dm_IV;Dm_IV;;F4;A4;True;False;;;;;Большая терция;99;False;F4_A4;F4_A4_ver
-D_F_perf5_Dm_IV;Dm_IV;D4;;A4;True;False;;;;;Квинта;100;False;D4_A4;D4_A4_ver
-Dm_IV6;Dm_IV6;F4;A4;D5;True;False;Субдоминантовый секстаккорд;0;Наверху;Первое обращение;;101;False;F4_A4_D5;F4_A4_D5_ver
-F_A_maj3_Dm_IV6;Dm_IV6;F4;A4;;True;False;;;;;Большая терция;102;False;F4_A4;F4_A4_ver
-A_D_perf4_Dm_IV6;Dm_IV6;;A4;D5;True;False;;;;;Кварта;103;False;A4_D5;A4_D5_ver
-F_D_maj6_Dm_IV6;Dm_IV6;F4;;D5;True;False;;;;;Большая секста;104;False;F4_D5;F4_D5_ver
-Dm_IV64;Dm_IV64;A4;D5;F5;True;False;Субдоминантовый квартсекстаккорд;0;В середине;Второе обращение;;105;False;A4_D5_F5;A4_D5_F5_ver
-A_D_perf4_Dm_IV64;Dm_IV64;A4;D5;;True;False;;;;;Кварта;106;False;A4_D5;A4_D5_ver
-D_F_min3_Dm_IV64;Dm_IV64;;D5;F5;True;False;;;;;Малая терция;107;False;D5_F5;D5_F5_ver
-A_F_min6_Dm_IV64;Dm_IV64;A4;;F5;True;False;;;;;Малая секста;108;False;A4_F5;A4_F5_ver
-Dm_IV_arp;Dm_IV_arp;D4;F4;A4;False;False;Субдоминантовое трезвучие;4;Внизу;Основной вид;;109;False;D4_F4_A4;D4_F4_A4
-D_F_min3_Dm_IV_mel;Dm_IV_arp;D4;F4;;False;False;;;;;Малая терция;110;False;D4_F4;D4_F4
-F_A_maj3_Dm_IV_mel;Dm_IV_arp;;F4;A4;False;False;;;;;Большая терция;111;False;F4_A4;F4_A4
-D_F_perf5_Dm_IV_mel;Dm_IV_arp;D4;;A4;False;False;;;;;Квинта;112;False;D4_A4;D4_A4
-Dm_IV6_arp;Dm_IV6_arp;F4;A4;D5;False;False;Субдоминантовый секстаккорд;5;Наверху;Первое обращение;;113;False;F4_A4_D5;F4_A4_D5
-F_A_maj3_Dm_IV6_mel;Dm_IV6_arp;F4;A4;;False;False;;;;;Большая терция;114;False;F4_A4;F4_A4
-A_D_perf4_Dm_IV6_mel;Dm_IV6_arp;;A4;D5;False;False;;;;;Кварта;115;False;A4_D5;A4_D5
-F_D_maj6_Dm_IV6_mel;Dm_IV6_arp;F4;;D5;False;False;;;;;Большая секста;116;False;F4_D5;F4_D5
-Dm_IV64_arp;Dm_IV64_arp;A4;D5;F5;False;False;Субдоминантовый квартсекстаккорд;6;В середине;Второе обращение;;117;False;A4_D5_F5;A4_D5_F5
-A_D_perf4_Dm_IV64_mel;Dm_IV64_arp;A4;D5;;False;False;;;;;Кварта;118;False;A4_D5;A4_D5
-D_F_min3_Dm_IV64_mel;Dm_IV64_arp;;D5;F5;False;False;;;;;Малая терция;119;False;D5_F5;D5_F5
-A_F_min6_Dm_IV64_mel;Dm_IV64_arp;A4;;F5;False;False;;;;;Малая секста;120;False;A4_F5;A4_F5
-E_V;E_V;E4;G#4;B4;True;False;Доминантовое трезвучие;0;Внизу;Основной вид;;121;False;E4_G#4_B4;E4_G#4_B4_ver
-E_G#_min3_E_V;E_V;E4;G#4;;True;False;;;;;Малая терция;122;False;E4_G#4;E4_G#4_ver
-G#_B_maj3_E_V;E_V;;G#4;B4;True;False;;;;;Большая терция;123;False;G#4_B4;G#4_B4_ver
-E_B_perf5_E_V;E_V;E4;;B4;True;False;;;;;Квинта;124;False;E4_B4;E4_B4_ver
-E_V6;E_V6;G#4;B4;E5;True;False;Доминантовый секстаккорд;0;Наверху;Первое обращение;;125;False;G#4_B4_E5;G#4_B4_E5_ver
-G#_B_maj3_E_V6;E_V6;G#4;B4;;True;False;;;;;Большая терция;126;False;G#4_B4;G#4_B4_ver
-B_E_perf4_E_V6;E_V6;;B4;E5;True;False;;;;;Кварта;127;False;B4_E5;B4_E5_ver
-G#_E_maj6_E_V6;E_V6;G#4;;E5;True;False;;;;;Большая секста;128;False;G#4_E5;G#4_E5_ver
-E_V64;E_V64;B4;E5;G#5;True;False;Доминантовый квартсекстаккорд;0;В середине;Второе обращение;;129;False;B4_E5_G#5;B4_E5_G#5_ver
-B_E_perf4_E_V64;E_V64;B4;E5;;True;False;;;;;Кварта;130;False;B4_E5;B4_E5_ver
-E_G#_min3_E_V64;E_V64;;E5;G#5;True;False;;;;;Малая терция;131;False;E5_G#5;E5_G#5_ver
-B_G#_min6_E_V64;E_V64;B4;;G#5;True;False;;;;;Малая секста;132;False;B4_G#5;B4_G#5_ver
-E_V_arp;E_V_arp;E4;G#4;B4;False;False;Доминантовое трезвучие;7;Внизу;Основной вид;;133;False;E4_G#4_B4;E4_G#4_B4
-E_G#_min3_E_V_mel;E_V_arp;E4;G#4;;False;False;;;;;Малая терция;134;False;E4_G#4;E4_G#4
-G#_B_maj3_E_V_mel;E_V_arp;;G#4;B4;False;False;;;;;Большая терция;135;False;G#4_B4;G#4_B4
-E_B_perf5_E_V_mel;E_V_arp;E4;;B4;False;False;;;;;Квинта;136;False;E4_B4;E4_B4
-E_V6_arp;E_V6_arp;G#4;B4;E5;False;False;Доминантовый секстаккорд;8;Наверху;Первое обращение;;137;False;G#4_B4_E5;G#4_B4_E5
-G#_B_maj3_E_V6_mel;E_V6_arp;G#4;B4;;False;False;;;;;Большая терция;138;False;G#4_B4;G#4_B4
-B_E_perf4_E_V6_mel;E_V6_arp;;B4;E5;False;False;;;;;Кварта;139;False;B4_E5;B4_E5
-G#_E_maj6_E_V6_mel;E_V6_arp;G#4;;E5;False;False;;;;;Большая секста;140;False;G#4_E5;G#4_E5
-E_V64_arp;E_V64_arp;B4;E5;G#5;False;False;Доминантовый квартсекстаккорд;9;В середине;Второе обращение;;141;False;B4_E5_G#5;B4_E5_G#5
-B_E_perf4_E_V64_mel;E_V64_arp;B4;E5;;False;False;;;;;Кварта;142;False;B4_E5;B4_E5
-E_G#_min3_E_V64_mel;E_V64_arp;;E5;G#5;False;False;;;;;Малая терция;143;False;E5_G#5;E5_G#5
-B_G#_min6_E_V64_mel;E_V64_arp;B4;;G#5;False;False;;;;;Малая секста;144;False;B4_G#5;B4_G#5
-E_A_perf4_Am_I6_mel_desc;Am_I6_arp;;A4;E4;False;False;;;;;;145;True;A4_E4;A4_E4
-F_A_maj3_Dm_IV_mel_desc;Dm_IV_arp;;A4;F4;False;False;;;;;;146;True;A4_F4;A4_F4
-C_A_maj6_Am_I6_mel_desc;Am_I6_arp;A4;;C4;False;False;;;;;;147;True;A4_C4;A4_C4
-D_F_perf5_Dm_IV_mel_desc;Dm_IV_arp;A4;;D4;False;False;;;;;;148;True;A4_D4;A4_D4
-F_A_maj3_F_IV64_mel_desc;F_IV64_arp;;A5;F5;False;True;;;;;;149;True;A5_F5;A5_F5
-C_A_maj6_F_IV64_mel_desc;F_IV64_arp;A5;;C4;False;True;;;;;;150;True;A5_C4;A5_C4
-G#_B_maj3_E_V_mel_desc;E_V_arp;;B4;G#4;False;False;;;;;;151;True;B4_G#4;B4_G#4
-E_B_perf5_E_V_mel_desc;E_V_arp;B4;;E4;False;False;;;;;;152;True;B4_E4;B4_E4
-G_B_maj3_G_V64_mel_desc;G_V64_arp;;B5;G5;False;True;;;;;;153;True;B5_G5;B5_G5
-D_B_maj6_G_V64_mel_desc;G_V64_arp;B5;;D4;False;True;;;;;;154;True;B5_D4;B5_D4
-A_C_min3_Am_I64_mel_desc;Am_I64_arp;;C5;A4;False;False;;;;;;155;True;C5_A4;C5_A4
-A_C_min3_F_IV_mel_desc;F_IV_arp;;C5;A4;False;True;;;;;;156;True;C5_A4;C5_A4
-G_C_perf4_C_I6_mel_desc;C_I6_arp;;C5;G4;False;True;;;;;;157;True;C5_G4;C5_G4
-E_C_min6_Am_I64_mel_desc;Am_I64_arp;C5;;E4;False;False;;;;;;158;True;C5_E4;C5_E4
-E_C_min6_C_I6_mel_desc;C_I6_arp;C5;;E4;False;True;;;;;;159;True;C5_E4;C5_E4
-F_C_perf5_F_IV_mel_desc;F_IV_arp;C5;;F4;False;True;;;;;;160;True;C5_F4;C5_F4
-A_D_perf4_Dm_IV6_mel_desc;Dm_IV6_arp;;D5;A4;False;False;;;;;;161;True;D5_A4;D5_A4
-B_D_min3_G_V_mel_desc;G_V_arp;;D5;B4;False;True;;;;;;162;True;D5_B4;D5_B4
-F_D_maj6_Dm_IV6_mel_desc;Dm_IV6_arp;D5;;F4;False;False;;;;;;163;True;D5_F4;D5_F4
-G_D_perf5_G_V_mel_desc;G_V_arp;D5;;G4;False;True;;;;;;164;True;D5_G4;D5_G4
-C_E_maj3_Am_I_mel_desc;Am_I_arp;;E4;C4;False;False;;;;;;165;True;E4_C4;E4_C4
-A_E_perf5_Am_I_mel_desc;Am_I_arp;E4;;A3;False;False;;;;;;166;True;E4_A3;E4_A3
-B_E_perf4_E_V6_mel_desc;E_V6_arp;;E5;B4;False;False;;;;;;167;True;E5_B4;E5_B4
-C_E_maj3_C_64_mel_desc;C_I64_arp;;E5;C5;False;True;;;;;;168;True;E5_C5;E5_C5
-G#_E_maj6_E_V6_mel_desc;E_V6_arp;E5;;G#4;False;False;;;;;;169;True;E5_G#4;E5_G#4
-G_E_maj6_C_I64_desc;C_I64;E5;;G4;False;True;;;;;;170;True;E5_G4;E5_G4
-G_E_maj6_C_I64_mel_desc;C_I64_arp;E5;;G4;False;True;;;;;;171;True;E5_G4;E5_G4
-C_F_perf4_F_IV6_mel_desc;F_IV6_arp;;F5;C5;False;True;;;;;;172;True;F5_C5;F5_C5
-D_F_min3_Dm_IV64_mel_desc;Dm_IV64_arp;;F5;D5;False;False;;;;;;173;True;F5_D5;F5_D5
-A_F_min6_Dm_IV64_mel_desc;Dm_IV64_arp;F5;;A4;False;False;;;;;;174;True;F5_A4;F5_A4
-A_F_min6_F_IV6_mel_desc;F_IV6_arp;F5;;A4;False;True;;;;;;175;True;F5_A4;F5_A4
-E_G#_min3_E_V64_mel_desc;E_V64_arp;;G#5;E5;False;False;;;;;;176;True;G#5_E5;G#5_E5
-B_G#_min6_E_V64_mel_desc;E_V64_arp;G#5;;B4;False;False;;;;;;177;True;G#5_B4;G#5_B4
-E_G_min3_C_I_mel_desc;C_I_arp;;G4;E4;False;True;;;;;;178;True;G4_E4;G4_E4
-C_G_perf5_C_I_mel_desc;C_I_arp;G4;;C4;False;True;;;;;;179;True;G4_C4;G4_C4
-D_G_perf4_G_V6_mel_desc;G_V6_arp;;G5;D5;False;True;;;;;;180;True;G5_D5;G5_D5
-B_D_min6_G_V6_mel_desc;G_V6_arp;G5;;B4;False;True;;;;;;181;True;G5_B4;G5_B4
-E_A_perf4_Am_I64_mel_desc;Am_I64_arp;A4;E4;;False;False;;;;;;182;True;A4_E4;A4_E4
-F_A_maj3_Dm_IV6_mel_desc;Dm_IV6_arp;A4;F4;;False;False;;;;;;183;True;A4_F4;A4_F4
-F_A_maj3_F_IV_mel_desc;F_IV_arp;A4;F4;;False;True;;;;;;184;True;A4_F4;A4_F4
-G#_B_maj3_E_V6_mel_desc;E_V6_arp;B4;G#4;;False;False;;;;;;185;True;B4_G#4;B4_G#4
-G_B_maj3_G_V_mel_desc;G_V_arp;B4;G4;;False;True;;;;;;186;True;B4_G4;B4_G4
-A_C_min3_Am_I_mel_desc;Am_I_arp;C4;A3;;False;False;;;;;;187;True;C4_A3;C4_A3
-A_C_min3_F_IV6_mel_desc;F_IV6_arp;C5;A4;;False;True;;;;;;188;True;C5_A4;C5_A4
-G_C_perf4_C_I64_mel_desc;C_I64_arp;C5;G4;;False;True;;;;;;189;True;C5_G4;C5_G4
-A_D_perf4_Dm_IV64_mel_desc;Dm_IV64_arp;D5;A4;;False;False;;;;;;190;True;D5_A4;D5_A4
-B_D_min3_G_V6_mel_desc;G_V6_arp;D5;B4;;False;True;;;;;;191;True;D5_B4;D5_B4
-C_E_maj3_Am_I6_mel_desc;Am_I6_arp;E4;C4;;False;False;;;;;;192;True;E4_C4;E4_C4
-C_E_maj3_C_I_mel_desc;C_I_arp;E4;C4;;False;True;;;;;;193;True;E4_C4;E4_C4
-B_E_perf4_E_V64_mel_desc;E_V64_arp;E5;B4;;False;False;;;;;;194;True;E5_B4;E5_B4
-D_F_min3_Dm_IV_mel_desc;Dm_IV_arp;F4;D4;;False;False;;;;;;195;True;F4_D4;F4_D4
-C_F_perf4_F_IV64_mel_desc;F_IV64_arp;F5;C5;;False;True;;;;;;196;True;F5_C5;F5_C5
-E_G#_min3_E_V_mel_desc;E_V_arp;G#4;E4;;False;False;;;;;;197;True;G#4_E4;G#4_E4
-E_G_maj3_C_I6_mel_desc;C_I6_arp;G4;E4;;False;True;;;;;;198;True;G4_E4;G4_E4
-D_G_perf4_G_V64_mel_desc;G_V64_arp;G5;D5;;False;True;;;;;;199;True;G5_D5;G5_D5
+name;note_1;note_2;note_3;vertical;tonality_maj;base_chord;chord_type;order;prima_location;inversion;interval;NN;mel_desc;sci_not;sci_uniq;chord_maj
+C_I;C4;E4;G4;True;True;C_I;Тоническое трезвучие;0;Внизу;Основной вид;;1;;C4_E4_G4;C4_E4_G4_ver;True
+C_E_maj3_C_I;C4;E4;;True;True;C_I;;;;;Большая терция;2;;C4_E4;C4_E4_ver;
+E_G_min3_C_I;;E4;G4;True;True;C_I;;;;;Малая терция;3;;E4_G4;E4_G4_ver;
+C_G_perf5_C_I;C4;;G4;True;True;C_I;;;;;Квинта;4;;C4_G4;C4_G4_ver;
+C_I6;E4;G4;C5;True;True;C_I6;Тонический секстаккорд;0;Наверху;Первое обращение;;5;;E4_G4_C5;E4_G4_C5_ver;True
+E_G_maj3_C_I6;E4;G4;;True;True;C_I6;;;;;Большая терция;6;;E4_G4;E4_G4_ver;
+G_C_perf4_C_I6;;G4;C5;True;True;C_I6;;;;;Кварта;7;;G4_C5;G4_C5_ver;
+E_C_min6_C_I6;E4;;C5;True;True;C_I6;;;;;Малая секста;8;;E4_C5;E4_C5_ver;
+C_I64;G4;C5;E5;True;True;C_I64;Тонический квартсекстаккорд;0;В середине;Второе обращение;;9;;G4_C5_E5;G4_C5_E5_ver;True
+G_C_perf4_C_I64;G4;C5;;True;True;C_I64;;;;;Кварта;10;;G4_C5;G4_C5_ver;
+C_E_maj3_C_I64;;C5;E5;True;True;C_I64;;;;;Большая терция;11;;C5_E5;C5_E5_ver;
+G_E_maj6_C_I64;G4;;E5;True;True;C_I64;;;;;Большая секста;12;;G4_E5;G4_E5_ver;
+C_I_arp;C4;E4;G4;False;True;C_I_arp;Тоническое трезвучие;1;Внизу;Основной вид;;13;;C4_E4_G4;C4_E4_G4;True
+C_E_maj3_C_I_mel;C4;E4;;False;True;C_I_arp;;;;;Большая терция;14;False;C4_E4;C4_E4;
+E_G_min3_C_I_mel;;E4;G4;False;True;C_I_arp;;;;;Малая терция;15;False;E4_G4;E4_G4;
+C_G_perf5_C_I_mel;C4;;G4;False;True;C_I_arp;;;;;Квинта;16;False;C4_G4;C4_G4;
+C_I6_arp;E4;G4;C5;False;True;C_I6_arp;Тонический секстаккорд;2;Наверху;Первое обращение;;17;;E4_G4_C5;E4_G4_C5;True
+E_G_maj3_C_I6_mel;E4;G4;;False;True;C_I6_arp;;;;;Большая терция;18;False;E4_G4;E4_G4;
+G_C_perf4_C_I6_mel;;G4;C5;False;True;C_I6_arp;;;;;Кварта;19;False;G4_C5;G4_C5;
+E_C_min6_C_I6_mel;E4;;C5;False;True;C_I6_arp;;;;;Малая секста;20;False;E4_C5;E4_C5;
+C_I64_arp;G4;C5;E5;False;True;C_I64_arp;Тонический квартсекстаккорд;3;В середине;Второе обращение;;21;;G4_C5_E5;G4_C5_E5;True
+G_C_perf4_C_I64_mel;G4;C5;;False;True;C_I64_arp;;;;;Кварта;22;False;G4_C5;G4_C5;
+C_E_maj3_C_64_mel;;C5;E5;False;True;C_I64_arp;;;;;Большая терция;23;False;C5_E5;C5_E5;
+G_E_maj6_C_I64_mel;G4;;E5;False;True;C_I64_arp;;;;;Большая секста;24;False;G4_E5;G4_E5;
+F_IV;F4;A4;C5;True;True;F_IV;Субдоминантовое трезвучие;0;Внизу;Основной вид;;25;;F4_A4_C5;F4_A4_C5_ver;True
+F_A_maj3_F_IV;F4;A4;;True;True;F_IV;;;;;Большая терция;26;;F4_A4;F4_A4_ver;
+A_C_min3_F_IV;;A4;C5;True;True;F_IV;;;;;Малая терция;27;;A4_C5;A4_C5_ver;
+F_C_perf5_F_IV;F4;;C5;True;True;F_IV;;;;;Квинта;28;;F4_C5;F4_C5_ver;
+F_IV6;A4;C5;F5;True;True;F_IV6;Субдоминантовый секстаккорд;0;Наверху;Первое обращение;;29;;A4_C5_F5;A4_C5_F5_ver;True
+A_C_min3_F_IV6;A4;C5;;True;True;F_IV6;;;;;Малая терция;30;;A4_C5;A4_C5_ver;
+C_F_perf4_F_IV6;;C5;F5;True;True;F_IV6;;;;;Кварта;31;;C5_F5;C5_F5_ver;
+A_F_min6_F_IV6;A4;;F5;True;True;F_IV6;;;;;Малая секста;32;;A4_F5;A4_F5_ver;
+F_IV64;C5;F5;A5;True;True;F_IV64;Субдоминантовый квартсекстаккорд;0;В середине;Второе обращение;;33;;C5_F5_A5;C5_F5_A5_ver;True
+C_F_perf4_F_IV64;C5;F5;;True;True;F_IV64;;;;;Кварта;34;;C5_F5;C5_F5_ver;
+F_A_maj3_F_IV64;;F5;A5;True;True;F_IV64;;;;;Большая терция;35;;F5_A5;F5_A5_ver;
+C_A_maj6_F_IV64;C5;;A5;True;True;F_IV64;;;;;Большая секста;36;;C5_A5;C5_A5_ver;
+F_IV_arp;F4;A4;C5;False;True;F_IV_arp;Субдоминантовое трезвучие;4;Внизу;Основной вид;;37;;F4_A4_C5;F4_A4_C5;True
+F_A_maj3_F_IV_mel;F4;A4;;False;True;F_IV_arp;;;;;Большая терция;38;False;F4_A4;F4_A4;
+A_C_min3_F_IV_mel;;A4;C5;False;True;F_IV_arp;;;;;Малая терция;39;False;A4_C5;A4_C5;
+F_C_perf5_F_IV_mel;F4;;C5;False;True;F_IV_arp;;;;;Квинта;40;False;F4_C5;F4_C5;
+F_IV6_arp;A4;C5;F5;False;True;F_IV6_arp;Субдоминантовый секстаккорд;5;Наверху;Первое обращение;;41;;A4_C5_F5;A4_C5_F5;True
+A_C_min3_F_IV6_mel;A4;C5;;False;True;F_IV6_arp;;;;;Малая терция;42;False;A4_C5;A4_C5;
+C_F_perf4_F_IV6_mel;;C5;F5;False;True;F_IV6_arp;;;;;Кварта;43;False;C5_F5;C5_F5;
+A_F_min6_F_IV6_mel;A4;;F5;False;True;F_IV6_arp;;;;;Малая секста;44;False;A4_F5;A4_F5;
+F_IV64_arp;C5;F5;A5;False;True;F_IV64_arp;Субдоминантовый квартсекстаккорд;6;В середине;Второе обращение;;45;;C5_F5_A5;C5_F5_A5;True
+C_F_perf4_F_IV64_mel;C5;F5;;False;True;F_IV64_arp;;;;;Кварта;46;False;C5_F5;C5_F5;
+F_A_maj3_F_IV64_mel;;F5;A5;False;True;F_IV64_arp;;;;;Большая терция;47;False;F5_A5;F5_A5;
+C_A_maj6_F_IV64_mel;C5;;A5;False;True;F_IV64_arp;;;;;Большая секста;48;False;C5_A5;C5_A5;
+G_V;G4;B4;D5;True;True;G_V;Доминантовое трезвучие;0;Внизу;Основной вид;;49;;G4_B4_D5;G4_B4_D5_ver;True
+G_B_maj3_G_V;G4;B4;;True;True;G_V;;;;;Большая терция;50;;G4_B4;G4_B4_ver;
+B_D_min3_G_V;;B4;D5;True;True;G_V;;;;;Малая терция;51;;B4_D5;B4_D5_ver;
+G_D_perf5_G_V;G4;;D5;True;True;G_V;;;;;Квинта;52;;G4_D5;G4_D5_ver;
+G_V6;B4;D5;G5;True;True;G_V6;Доминантовый секстаккорд;0;Наверху;Первое обращение;;53;;B4_D5_G5;B4_D5_G5_ver;True
+B_D_min3_G_V6;B4;D5;;True;True;G_V6;;;;;Малая терция;54;;B4_D5;B4_D5_ver;
+D_G_perf4_G_V6;;D5;G5;True;True;G_V6;;;;;Кварта;55;;D5_G5;D5_G5_ver;
+B_D_min6_G_V6;B4;;G5;True;True;G_V6;;;;;Малая секста;56;;B4_G5;B4_G5_ver;
+G_V64;D5;G5;B5;True;True;G_V64;Доминантовый квартсекстаккорд;0;В середине;Второе обращение;;57;;D5_G5_B5;D5_G5_B5_ver;True
+D_G_perf4_G_V64;D5;G5;;True;True;G_V64;;;;;Кварта;58;;D5_G5;D5_G5_ver;
+G_B_maj3_G_V64;;G5;B5;True;True;G_V64;;;;;Большая терция;59;;G5_B5;G5_B5_ver;
+D_B_maj6_G_V64;D4;;B5;True;True;G_V64;;;;;Большая секста;60;;D4_B5;D4_B5_ver;
+G_V_arp;G4;B4;D5;False;True;G_V_arp;Доминантовое трезвучие;7;Внизу;Основной вид;;61;;G4_B4_D5;G4_B4_D5;True
+G_B_maj3_G_V_mel;G4;B4;;False;True;G_V_arp;;;;;Большая терция;62;False;G4_B4;G4_B4;
+B_D_min3_G_V_mel;;B4;D5;False;True;G_V_arp;;;;;Малая терция;63;False;B4_D5;B4_D5;
+G_D_perf5_G_V_mel;G4;;D5;False;True;G_V_arp;;;;;Квинта;64;False;G4_D5;G4_D5;
+G_V6_arp;B4;D5;G5;False;True;G_V6_arp;Доминантовый секстаккорд;8;Наверху;Первое обращение;;65;;B4_D5_G5;B4_D5_G5;True
+B_D_min3_G_V6_mel;B4;D5;;False;True;G_V6_arp;;;;;Малая терция;66;False;B4_D5;B4_D5;
+D_G_perf4_G_V6_mel;;D5;G5;False;True;G_V6_arp;;;;;Кварта;67;False;D5_G5;D5_G5;
+B_D_min6_G_V6_mel;B4;;G5;False;True;G_V6_arp;;;;;Малая секста;68;False;B4_G5;B4_G5;
+G_V64_arp;D5;G5;B5;False;True;G_V64_arp;Доминантовый квартсекстаккорд;9;В середине;Второе обращение;;69;;D5_G5_B5;D5_G5_B5;True
+D_G_perf4_G_V64_mel;D5;G5;;False;True;G_V64_arp;;;;;Кварта;70;False;D5_G5;D5_G5;
+G_B_maj3_G_V64_mel;;G5;B5;False;True;G_V64_arp;;;;;Большая терция;71;False;G5_B5;G5_B5;
+D_B_maj6_G_V64_mel;D4;;B5;False;True;G_V64_arp;;;;;Большая секста;72;False;D4_B5;D4_B5;
+Am_I;A3;C4;E4;True;False;Am_I;Тоническое трезвучие;0;Внизу;Основной вид;;73;;A3_C4_E4;A3_C4_E4_ver;False
+A_C_min3_Am_I;A3;C4;;True;False;Am_I;;;;;Малая терция;74;;A3_C4;A3_C4_ver;
+C_E_maj3_Am_I;;C4;E4;True;False;Am_I;;;;;Большая терция;75;;C4_E4;C4_E4_ver;
+A_E_perf5_Am_I;A3;;E4;True;False;Am_I;;;;;Квинта;76;;A3_E4;A3_E4_ver;
+Am_I6;C4;E4;A4;True;False;Am_I6;Тонический секстаккорд;0;Наверху;Первое обращение;;77;;C4_E4_A4;C4_E4_A4_ver;False
+C_E_maj3_Am_I6;C4;E4;;True;False;Am_I6;;;;;Большая терция;78;;C4_E4;C4_E4_ver;
+E_A_perf4_Am_I6;;E4;A4;True;False;Am_I6;;;;;Кварта;79;;E4_A4;E4_A4_ver;
+C_A_maj6_Am_I6;C4;;A4;True;False;Am_I6;;;;;Большая секста;80;;C4_A4;C4_A4_ver;
+Am_I64;E4;A4;C5;True;False;Am_I64;Тонический квартсекстаккорд;0;В середине;Второе обращение;;81;;E4_A4_C5;E4_A4_C5_ver;False
+E_A_perf4_Am_I64;E4;A4;;True;False;Am_I64;;;;;Кварта;82;;E4_A4;E4_A4_ver;
+A_C_min3_Am_I64;;A4;C5;True;False;Am_I64;;;;;Малая терция;83;;A4_C5;A4_C5_ver;
+E_C_min6_Am_I64;E4;;C5;True;False;Am_I64;;;;;Малая секста;84;;E4_C5;E4_C5_ver;
+Am_I_arp;A3;C4;E4;False;False;Am_I_arp;Тоническое трезвучие;1;Внизу;Основной вид;;85;;A3_C4_E4;A3_C4_E4;False
+A_C_min3_Am_I_mel;A3;C4;;False;False;Am_I_arp;;;;;Малая терция;86;False;A3_C4;A3_C4;
+C_E_maj3_Am_I_mel;;C4;E4;False;False;Am_I_arp;;;;;Большая терция;87;False;C4_E4;C4_E4;
+A_E_perf5_Am_I_mel;A3;;E4;False;False;Am_I_arp;;;;;Квинта;88;False;A3_E4;A3_E4;
+Am_I6_arp;C4;E4;A4;False;False;Am_I6_arp;Тонический секстаккорд;2;Наверху;Первое обращение;;89;;C4_E4_A4;C4_E4_A4;False
+C_E_maj3_Am_I6_mel;C4;E4;;False;False;Am_I6_arp;;;;;Большая терция;90;False;C4_E4;C4_E4;
+E_A_perf4_Am_I6_mel;;E4;A4;False;False;Am_I6_arp;;;;;Кварта;91;False;E4_A4;E4_A4;
+C_A_maj6_Am_I6_mel;C4;;A4;False;False;Am_I6_arp;;;;;Большая секста;92;False;C4_A4;C4_A4;
+Am_I64_arp;E4;A4;C5;False;False;Am_I64_arp;Тонический квартсекстаккорд;3;В середине;Второе обращение;;93;;E4_A4_C5;E4_A4_C5;False
+E_A_perf4_Am_I64_mel;E4;A4;;False;False;Am_I64_arp;;;;;Кварта;94;False;E4_A4;E4_A4;
+A_C_min3_Am_I64_mel;;A4;C5;False;False;Am_I64_arp;;;;;Малая терция;95;False;A4_C5;A4_C5;
+E_C_min6_Am_I64_mel;E4;;C5;False;False;Am_I64_arp;;;;;Малая секста;96;False;E4_C5;E4_C5;
+Dm_IV;D4;F4;A4;True;False;Dm_IV;Субдоминантовое трезвучие;0;Внизу;Основной вид;;97;;D4_F4_A4;D4_F4_A4_ver;False
+D_F_min3_Dm_IV;D4;F4;;True;False;Dm_IV;;;;;Малая терция;98;;D4_F4;D4_F4_ver;
+F_A_maj3_Dm_IV;;F4;A4;True;False;Dm_IV;;;;;Большая терция;99;;F4_A4;F4_A4_ver;
+D_F_perf5_Dm_IV;D4;;A4;True;False;Dm_IV;;;;;Квинта;100;;D4_A4;D4_A4_ver;
+Dm_IV6;F4;A4;D5;True;False;Dm_IV6;Субдоминантовый секстаккорд;0;Наверху;Первое обращение;;101;;F4_A4_D5;F4_A4_D5_ver;False
+F_A_maj3_Dm_IV6;F4;A4;;True;False;Dm_IV6;;;;;Большая терция;102;;F4_A4;F4_A4_ver;
+A_D_perf4_Dm_IV6;;A4;D5;True;False;Dm_IV6;;;;;Кварта;103;;A4_D5;A4_D5_ver;
+F_D_maj6_Dm_IV6;F4;;D5;True;False;Dm_IV6;;;;;Большая секста;104;;F4_D5;F4_D5_ver;
+Dm_IV64;A4;D5;F5;True;False;Dm_IV64;Субдоминантовый квартсекстаккорд;0;В середине;Второе обращение;;105;;A4_D5_F5;A4_D5_F5_ver;False
+A_D_perf4_Dm_IV64;A4;D5;;True;False;Dm_IV64;;;;;Кварта;106;;A4_D5;A4_D5_ver;
+D_F_min3_Dm_IV64;;D5;F5;True;False;Dm_IV64;;;;;Малая терция;107;;D5_F5;D5_F5_ver;
+A_F_min6_Dm_IV64;A4;;F5;True;False;Dm_IV64;;;;;Малая секста;108;;A4_F5;A4_F5_ver;
+Dm_IV_arp;D4;F4;A4;False;False;Dm_IV_arp;Субдоминантовое трезвучие;4;Внизу;Основной вид;;109;;D4_F4_A4;D4_F4_A4;False
+D_F_min3_Dm_IV_mel;D4;F4;;False;False;Dm_IV_arp;;;;;Малая терция;110;False;D4_F4;D4_F4;
+F_A_maj3_Dm_IV_mel;;F4;A4;False;False;Dm_IV_arp;;;;;Большая терция;111;False;F4_A4;F4_A4;
+D_F_perf5_Dm_IV_mel;D4;;A4;False;False;Dm_IV_arp;;;;;Квинта;112;False;D4_A4;D4_A4;
+Dm_IV6_arp;F4;A4;D5;False;False;Dm_IV6_arp;Субдоминантовый секстаккорд;5;Наверху;Первое обращение;;113;;F4_A4_D5;F4_A4_D5;False
+F_A_maj3_Dm_IV6_mel;F4;A4;;False;False;Dm_IV6_arp;;;;;Большая терция;114;False;F4_A4;F4_A4;
+A_D_perf4_Dm_IV6_mel;;A4;D5;False;False;Dm_IV6_arp;;;;;Кварта;115;False;A4_D5;A4_D5;
+F_D_maj6_Dm_IV6_mel;F4;;D5;False;False;Dm_IV6_arp;;;;;Большая секста;116;False;F4_D5;F4_D5;
+Dm_IV64_arp;A4;D5;F5;False;False;Dm_IV64_arp;Субдоминантовый квартсекстаккорд;6;В середине;Второе обращение;;117;;A4_D5_F5;A4_D5_F5;False
+A_D_perf4_Dm_IV64_mel;A4;D5;;False;False;Dm_IV64_arp;;;;;Кварта;118;False;A4_D5;A4_D5;
+D_F_min3_Dm_IV64_mel;;D5;F5;False;False;Dm_IV64_arp;;;;;Малая терция;119;False;D5_F5;D5_F5;
+A_F_min6_Dm_IV64_mel;A4;;F5;False;False;Dm_IV64_arp;;;;;Малая секста;120;False;A4_F5;A4_F5;
+E_V;E4;G#4;B4;True;False;E_V;Доминантовое трезвучие;0;Внизу;Основной вид;;121;;E4_G#4_B4;E4_G#4_B4_ver;True
+E_G#_min3_E_V;E4;G#4;;True;False;E_V;;;;;Малая терция;122;;E4_G#4;E4_G#4_ver;
+G#_B_maj3_E_V;;G#4;B4;True;False;E_V;;;;;Большая терция;123;;G#4_B4;G#4_B4_ver;
+E_B_perf5_E_V;E4;;B4;True;False;E_V;;;;;Квинта;124;;E4_B4;E4_B4_ver;
+E_V6;G#4;B4;E5;True;False;E_V6;Доминантовый секстаккорд;0;Наверху;Первое обращение;;125;;G#4_B4_E5;G#4_B4_E5_ver;True
+G#_B_maj3_E_V6;G#4;B4;;True;False;E_V6;;;;;Большая терция;126;;G#4_B4;G#4_B4_ver;
+B_E_perf4_E_V6;;B4;E5;True;False;E_V6;;;;;Кварта;127;;B4_E5;B4_E5_ver;
+G#_E_maj6_E_V6;G#4;;E5;True;False;E_V6;;;;;Большая секста;128;;G#4_E5;G#4_E5_ver;
+E_V64;B4;E5;G#5;True;False;E_V64;Доминантовый квартсекстаккорд;0;В середине;Второе обращение;;129;;B4_E5_G#5;B4_E5_G#5_ver;True
+B_E_perf4_E_V64;B4;E5;;True;False;E_V64;;;;;Кварта;130;;B4_E5;B4_E5_ver;
+E_G#_min3_E_V64;;E5;G#5;True;False;E_V64;;;;;Малая терция;131;;E5_G#5;E5_G#5_ver;
+B_G#_min6_E_V64;B4;;G#5;True;False;E_V64;;;;;Малая секста;132;;B4_G#5;B4_G#5_ver;
+E_V_arp;E4;G#4;B4;False;False;E_V_arp;Доминантовое трезвучие;7;Внизу;Основной вид;;133;;E4_G#4_B4;E4_G#4_B4;True
+E_G#_min3_E_V_mel;E4;G#4;;False;False;E_V_arp;;;;;Малая терция;134;False;E4_G#4;E4_G#4;
+G#_B_maj3_E_V_mel;;G#4;B4;False;False;E_V_arp;;;;;Большая терция;135;False;G#4_B4;G#4_B4;
+E_B_perf5_E_V_mel;E4;;B4;False;False;E_V_arp;;;;;Квинта;136;False;E4_B4;E4_B4;
+E_V6_arp;G#4;B4;E5;False;False;E_V6_arp;Доминантовый секстаккорд;8;Наверху;Первое обращение;;137;;G#4_B4_E5;G#4_B4_E5;True
+G#_B_maj3_E_V6_mel;G#4;B4;;False;False;E_V6_arp;;;;;Большая терция;138;False;G#4_B4;G#4_B4;
+B_E_perf4_E_V6_mel;;B4;E5;False;False;E_V6_arp;;;;;Кварта;139;False;B4_E5;B4_E5;
+G#_E_maj6_E_V6_mel;G#4;;E5;False;False;E_V6_arp;;;;;Большая секста;140;False;G#4_E5;G#4_E5;
+E_V64_arp;B4;E5;G#5;False;False;E_V64_arp;Доминантовый квартсекстаккорд;9;В середине;Второе обращение;;141;;B4_E5_G#5;B4_E5_G#5;True
+B_E_perf4_E_V64_mel;B4;E5;;False;False;E_V64_arp;;;;;Кварта;142;False;B4_E5;B4_E5;
+E_G#_min3_E_V64_mel;;E5;G#5;False;False;E_V64_arp;;;;;Малая терция;143;False;E5_G#5;E5_G#5;
+B_G#_min6_E_V64_mel;B4;;G#5;False;False;E_V64_arp;;;;;Малая секста;144;False;B4_G#5;B4_G#5;
+E_A_perf4_Am_I6_mel_desc;;A4;E4;False;False;Am_I6_arp;;;;;Кварта;145;True;A4_E4;A4_E4;
+F_A_maj3_Dm_IV_mel_desc;;A4;F4;False;False;Dm_IV_arp;;;;;Большая терция;146;True;A4_F4;A4_F4;
+C_A_maj6_Am_I6_mel_desc;A4;;C4;False;False;Am_I6_arp;;;;;Большая секста;147;True;A4_C4;A4_C4;
+D_F_perf5_Dm_IV_mel_desc;A4;;D4;False;False;Dm_IV_arp;;;;;Квинта;148;True;A4_D4;A4_D4;
+F_A_maj3_F_IV64_mel_desc;;A5;F5;False;True;F_IV64_arp;;;;;Большая терция;149;True;A5_F5;A5_F5;
+C_A_maj6_F_IV64_mel_desc;A5;;C5;False;True;F_IV64_arp;;;;;Большая секста;150;True;A5_C5;A5_C5;
+G#_B_maj3_E_V_mel_desc;;B4;G#4;False;False;E_V_arp;;;;;Большая терция;151;True;B4_G#4;B4_G#4;
+E_B_perf5_E_V_mel_desc;B4;;E4;False;False;E_V_arp;;;;;Квинта;152;True;B4_E4;B4_E4;
+G_B_maj3_G_V64_mel_desc;;B5;G5;False;True;G_V64_arp;;;;;Большая терция;153;True;B5_G5;B5_G5;
+D_B_maj6_G_V64_mel_desc;B5;;D4;False;True;G_V64_arp;;;;;Большая секста;154;True;B5_D4;B5_D4;
+A_C_min3_Am_I64_mel_desc;;C5;A4;False;False;Am_I64_arp;;;;;Малая терция;155;True;C5_A4;C5_A4;
+A_C_min3_F_IV_mel_desc;;C5;A4;False;True;F_IV_arp;;;;;Малая терция;156;True;C5_A4;C5_A4;
+G_C_perf4_C_I6_mel_desc;;C5;G4;False;True;C_I6_arp;;;;;Кварта;157;True;C5_G4;C5_G4;
+E_C_min6_Am_I64_mel_desc;C5;;E4;False;False;Am_I64_arp;;;;;Малая секста;158;True;C5_E4;C5_E4;
+E_C_min6_C_I6_mel_desc;C5;;E4;False;True;C_I6_arp;;;;;Малая секста;159;True;C5_E4;C5_E4;
+F_C_perf5_F_IV_mel_desc;C5;;F4;False;True;F_IV_arp;;;;;Квинта;160;True;C5_F4;C5_F4;
+A_D_perf4_Dm_IV6_mel_desc;;D5;A4;False;False;Dm_IV6_arp;;;;;Кварта;161;True;D5_A4;D5_A4;
+B_D_min3_G_V_mel_desc;;D5;B4;False;True;G_V_arp;;;;;Малая терция;162;True;D5_B4;D5_B4;
+F_D_maj6_Dm_IV6_mel_desc;D5;;F4;False;False;Dm_IV6_arp;;;;;Большая секста;163;True;D5_F4;D5_F4;
+G_D_perf5_G_V_mel_desc;D5;;G4;False;True;G_V_arp;;;;;Квинта;164;True;D5_G4;D5_G4;
+C_E_maj3_Am_I_mel_desc;;E4;C4;False;False;Am_I_arp;;;;;Большая терция;165;True;E4_C4;E4_C4;
+A_E_perf5_Am_I_mel_desc;E4;;A3;False;False;Am_I_arp;;;;;Квинта;166;True;E4_A3;E4_A3;
+B_E_perf4_E_V6_mel_desc;;E5;B4;False;False;E_V6_arp;;;;;Кварта;167;True;E5_B4;E5_B4;
+C_E_maj3_C_64_mel_desc;;E5;C5;False;True;C_I64_arp;;;;;Большая терция;168;True;E5_C5;E5_C5;
+G#_E_maj6_E_V6_mel_desc;E5;;G#4;False;False;E_V6_arp;;;;;Большая секста;169;True;E5_G#4;E5_G#4;
+G_E_maj6_C_I64_mel_desc;E5;;G4;False;True;C_I64_arp;;;;;Большая секста;171;True;E5_G4;E5_G4;
+C_F_perf4_F_IV6_mel_desc;;F5;C5;False;True;F_IV6_arp;;;;;Кварта;172;True;F5_C5;F5_C5;
+D_F_min3_Dm_IV64_mel_desc;;F5;D5;False;False;Dm_IV64_arp;;;;;Малая терция;173;True;F5_D5;F5_D5;
+A_F_min6_Dm_IV64_mel_desc;F5;;A4;False;False;Dm_IV64_arp;;;;;Малая секста;174;True;F5_A4;F5_A4;
+A_F_min6_F_IV6_mel_desc;F5;;A4;False;True;F_IV6_arp;;;;;Малая секста;175;True;F5_A4;F5_A4;
+E_G#_min3_E_V64_mel_desc;;G#5;E5;False;False;E_V64_arp;;;;;Малая терция;176;True;G#5_E5;G#5_E5;
+B_G#_min6_E_V64_mel_desc;G#5;;B4;False;False;E_V64_arp;;;;;Малая секста;177;True;G#5_B4;G#5_B4;
+E_G_min3_C_I_mel_desc;;G4;E4;False;True;C_I_arp;;;;;Большая терция;178;True;G4_E4;G4_E4;
+C_G_perf5_C_I_mel_desc;G4;;C4;False;True;C_I_arp;;;;;Квинта;179;True;G4_C4;G4_C4;
+D_G_perf4_G_V6_mel_desc;;G5;D5;False;True;G_V6_arp;;;;;Кварта;180;True;G5_D5;G5_D5;
+B_D_min6_G_V6_mel_desc;G5;;B4;False;True;G_V6_arp;;;;;Малая секста;181;True;G5_B4;G5_B4;
+E_A_perf4_Am_I64_mel_desc;A4;E4;;False;False;Am_I64_arp;;;;;Кварта;182;True;A4_E4;A4_E4;
+F_A_maj3_Dm_IV6_mel_desc;A4;F4;;False;False;Dm_IV6_arp;;;;;Большая терция;183;True;A4_F4;A4_F4;
+F_A_maj3_F_IV_mel_desc;A4;F4;;False;True;F_IV_arp;;;;;Большая терция;184;True;A4_F4;A4_F4;
+G#_B_maj3_E_V6_mel_desc;B4;G#4;;False;False;E_V6_arp;;;;;Большая терция;185;True;B4_G#4;B4_G#4;
+G_B_maj3_G_V_mel_desc;B4;G4;;False;True;G_V_arp;;;;;Большая терция;186;True;B4_G4;B4_G4;
+A_C_min3_Am_I_mel_desc;C4;A3;;False;False;Am_I_arp;;;;;Малая терция;187;True;C4_A3;C4_A3;
+A_C_min3_F_IV6_mel_desc;C5;A4;;False;True;F_IV6_arp;;;;;Малая терция;188;True;C5_A4;C5_A4;
+G_C_perf4_C_I64_mel_desc;C5;G4;;False;True;C_I64_arp;;;;;Кварта;189;True;C5_G4;C5_G4;
+A_D_perf4_Dm_IV64_mel_desc;D5;A4;;False;False;Dm_IV64_arp;;;;;Кварта;190;True;D5_A4;D5_A4;
+B_D_min3_G_V6_mel_desc;D5;B4;;False;True;G_V6_arp;;;;;Малая терция;191;True;D5_B4;D5_B4;
+C_E_maj3_Am_I6_mel_desc;E4;C4;;False;False;Am_I6_arp;;;;;Большая терция;192;True;E4_C4;E4_C4;
+C_E_maj3_C_I_mel_desc;E4;C4;;False;True;C_I_arp;;;;;Большая терция;193;True;E4_C4;E4_C4;
+B_E_perf4_E_V64_mel_desc;E5;B4;;False;False;E_V64_arp;;;;;Кварта;194;True;E5_B4;E5_B4;
+D_F_min3_Dm_IV_mel_desc;F4;D4;;False;False;Dm_IV_arp;;;;;Малая терция;195;True;F4_D4;F4_D4;
+C_F_perf4_F_IV64_mel_desc;F5;C5;;False;True;F_IV64_arp;;;;;Кварта;196;True;F5_C5;F5_C5;
+E_G#_min3_E_V_mel_desc;G#4;E4;;False;False;E_V_arp;;;;;Малая терция;197;True;G#4_E4;G#4_E4;
+E_G_maj3_C_I6_mel_desc;G4;E4;;False;True;C_I6_arp;;;;;Большая терция;198;True;G4_E4;G4_E4;
+D_G_perf4_G_V64_mel_desc;G5;D5;;False;True;G_V64_arp;;;;;Кварта;199;True;G5_D5;G5_D5;

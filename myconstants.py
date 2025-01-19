@@ -4,7 +4,8 @@ CONFIG_FILE="config.json"
 
 class AliceReplies:
     DONT_UNDERSTAND = "Я тебя не поняла, повтори, пожалуйста."
-    SOMETHING_WENT_WRONG = "Ой, Что-то пошло не так..."
+    SOMETHING_WENT_WRONG = "Ой, что-то пошло не так..."
+    BYEBYE = "Пока, пока, приходи ещё!"
 
 class GameMode:
     UNKNOWN = -1
