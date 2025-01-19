@@ -102,22 +102,22 @@ class MelDictEngineAlice(MelDictEngineBase):
                         return task.tts_name if ts else task.display_name
                     reply = None
                     if first_run:
-                        reply = "Доступно четыре режима игры.\n" \
-                                f"1. [{get_name(self.__demo_task)}] - Демонстрационный режим.\n" \
-                                f"2. [{get_name(self.__missed_note_task)}] - Поиск пропущенного звука в аккорде.\n" \
-                                f"3. [{get_name(self.__cadence_task)}] - Угадывание аккорда в последовательности.\n" \
-                                f"4. [{get_name(self.__prima_loc_task)}] - Определение основного тона аккорда.\n"\
+                        reply = "Доступно четыре уровня:\n" \
+                                f"1. {get_name(self.__demo_task)} - демонстрационный режим.\n" \
+                                f"2. {get_name(self.__missed_note_task)} - поиск пропущенного звука в аккорде.\n" \
+                                f"3. {get_name(self.__prima_loc_task)} - определение основного тона аккорда.\n"\
+                                f"4. {get_name(self.__cadence_task)} - угадывание аккорда в последовательности.\n" \
                                 f"\n" \
                                 f"Чтобы выйти в это меню, в любое время скажи:\n" \
-                                f"[МЕНЮ] или [ПЕРЕЗАПУСК].\n" \
+                                f"[Меню] или [Перезапуск].\n" \
                                 f"Для выхода из музыкального диктанта скажи:\n" \
-                                f"[ХВАТИТ]"
+                                f"[Хватит]."
                     else:
                         reply =  f"Скажи [{get_name(self.__demo_task)}], чтобы запустить демонстрационный режим.\n" \
                                  f"[{get_name(self.__missed_note_task)}] - чтобы искать пропущенный звук в аккорде.\n" \
-                                 f"[{get_name(self.__cadence_task)}], чтобы угадывать аккорд в последовательности.\n" \
                                  f"[{get_name(self.__prima_loc_task)}], чтобы определять основной тон аккорда.\n" \
-                                  "Скажи [МЕНЮ] или [ПЕРЕЗАПУСК] чтобы выйти в это меню."
+                                 f"[{get_name(self.__cadence_task)}], чтобы угадывать аккорд в последовательности.\n" \
+                                  "Скажи [Меню] или [Перезапуск] чтобы выйти в это меню."
                     if ts:
                         reply = reply.replace("1", "первый") \
                                      .replace("2", "второй") \
@@ -146,10 +146,10 @@ class MelDictEngineAlice(MelDictEngineBase):
                     new_task = self.__demo_task
                 elif CmdFilter.passed(message.command, ("пропущенн", "2"), exclude=("нет", "не", )):
                     new_task = self.__missed_note_task
-                elif CmdFilter.passed(message.command, ("каденци", "3"), exclude=("нет", "не", )):
-                    new_task = self.__cadence_task
-                elif CmdFilter.passed(message.command, ("тоник", "4"), exclude=("нет", "не", "тонир", "тонал")):
+                elif CmdFilter.passed(message.command, ("тоник", "3"), exclude=("нет", "не", "тонир", "тонал")):
                     new_task = self.__prima_loc_task
+                elif CmdFilter.passed(message.command, ("каденци", "4"), exclude=("нет", "не", )):
+                    new_task = self.__cadence_task
 
                 if new_task:
                     self.mode = GameMode.TASK

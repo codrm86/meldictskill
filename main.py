@@ -93,6 +93,8 @@ def main() -> None:
         config = Config.load(CONFIG_FILE)
         observer = start_config_watcher(CONFIG_FILE)
 
+        logging.info(f"Skill-ID: {config.skill.id}, OAuth-Token: {config.skill.oauth_token}")
+
         skill = Skill(skill_id=config.skill.id, oauth_token=config.skill.oauth_token)
         asyncio.run(upload_websounds(skill))
 
@@ -101,6 +103,7 @@ def main() -> None:
             ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
             ssl_context.load_cert_chain(certfile=config.network.ssl.certfile, keyfile=config.network.ssl.keyfile)
 
+        logging.info(f"Запуск HTTP-сервера: IP {config.network.ip}:{config.network.port}, URL \"{config.network.path}\"")
         app = web.Application()
         requests_handler = OneSkillAiohttpRequestHandler(dispatcher=md.dispatcher, skill=skill)
         requests_handler.register(app, path=f"/{config.network.path}")

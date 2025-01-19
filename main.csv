@@ -58,7 +58,7 @@ B_D_min6_G_V6;B4;;G5;True;True;G_V6;;;;;Малая секста;56;;B4_G5;B4_G5_
 G_V64;D5;G5;B5;True;True;G_V64;Доминантовый квартсекстаккорд;0;В середине;Второе обращение;;57;;D5_G5_B5;D5_G5_B5_ver;True
 D_G_perf4_G_V64;D5;G5;;True;True;G_V64;;;;;Кварта;58;;D5_G5;D5_G5_ver;
 G_B_maj3_G_V64;;G5;B5;True;True;G_V64;;;;;Большая терция;59;;G5_B5;G5_B5_ver;
-D_B_maj6_G_V64;D4;;B5;True;True;G_V64;;;;;Большая секста;60;;D4_B5;D4_B5_ver;
+D_B_maj6_G_V64;D5;;B5;True;True;G_V64;;;;;Большая секста;60;;D5_B5;D5_B5_ver;
 G_V_arp;G4;B4;D5;False;True;G_V_arp;Доминантовое трезвучие;7;Внизу;Основной вид;;61;;G4_B4_D5;G4_B4_D5;True
 G_B_maj3_G_V_mel;G4;B4;;False;True;G_V_arp;;;;;Большая терция;62;False;G4_B4;G4_B4;
 B_D_min3_G_V_mel;;B4;D5;False;True;G_V_arp;;;;;Малая терция;63;False;B4_D5;B4_D5;
@@ -70,7 +70,7 @@ B_D_min6_G_V6_mel;B4;;G5;False;True;G_V6_arp;;;;;Малая секста;68;Fals
 G_V64_arp;D5;G5;B5;False;True;G_V64_arp;Доминантовый квартсекстаккорд;9;В середине;Второе обращение;;69;;D5_G5_B5;D5_G5_B5;True
 D_G_perf4_G_V64_mel;D5;G5;;False;True;G_V64_arp;;;;;Кварта;70;False;D5_G5;D5_G5;
 G_B_maj3_G_V64_mel;;G5;B5;False;True;G_V64_arp;;;;;Большая терция;71;False;G5_B5;G5_B5;
-D_B_maj6_G_V64_mel;D4;;B5;False;True;G_V64_arp;;;;;Большая секста;72;False;D4_B5;D4_B5;
+D_B_maj6_G_V64_mel;D5;;B5;False;True;G_V64_arp;;;;;Большая секста;72;False;D5_B5;D5_B5;
 Am_I;A3;C4;E4;True;False;Am_I;Тоническое трезвучие;0;Внизу;Основной вид;;73;;A3_C4_E4;A3_C4_E4_ver;False
 A_C_min3_Am_I;A3;C4;;True;False;Am_I;;;;;Малая терция;74;;A3_C4;A3_C4_ver;
 C_E_maj3_Am_I;;C4;E4;True;False;Am_I;;;;;Большая терция;75;;C4_E4;C4_E4_ver;
@@ -152,7 +152,7 @@ C_A_maj6_F_IV64_mel_desc;A5;;C5;False;True;F_IV64_arp;;;;;Большая сек�
 G#_B_maj3_E_V_mel_desc;;B4;G#4;False;False;E_V_arp;;;;;Большая терция;151;True;B4_G#4;B4_G#4;
 E_B_perf5_E_V_mel_desc;B4;;E4;False;False;E_V_arp;;;;;Квинта;152;True;B4_E4;B4_E4;
 G_B_maj3_G_V64_mel_desc;;B5;G5;False;True;G_V64_arp;;;;;Большая терция;153;True;B5_G5;B5_G5;
-D_B_maj6_G_V64_mel_desc;B5;;D4;False;True;G_V64_arp;;;;;Большая секста;154;True;B5_D4;B5_D4;
+D_B_maj6_G_V64_mel_desc;B5;;D5;False;True;G_V64_arp;;;;;Большая секста;154;True;B5_D5;B5_D5;
 A_C_min3_Am_I64_mel_desc;;C5;A4;False;False;Am_I64_arp;;;;;Малая терция;155;True;C5_A4;C5_A4;
 A_C_min3_F_IV_mel_desc;;C5;A4;False;True;F_IV_arp;;;;;Малая терция;156;True;C5_A4;C5_A4;
 G_C_perf4_C_I6_mel_desc;;C5;G4;False;True;C_I6_arp;;;;;Кварта;157;True;C5_G4;C5_G4;

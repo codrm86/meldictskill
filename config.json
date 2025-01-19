@@ -16,8 +16,8 @@
         "main_csv": "main.csv"
     },
     "skill": {
-        "id": "7924d0ec-5ba2-4ca3-af7d-a7435df0ba83",
-        "oauth_token": "y0__wgBEMe57vECGKP3EyDys-TuEd69UqPDcm0Ce6LjVdCwPhipPKZ8"
+        "id": "",
+        "oauth_token": ""
     },
     "debug":{
         "enabled": true
