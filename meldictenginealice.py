@@ -48,15 +48,12 @@ class MelDictEngineAlice(MelDictEngineBase):
     def get_stats_reply(self) -> tuple[str, str]:
         match self.mode:
             case GameMode.DEMO | GameMode.TRAIN:
-                reply = "В этом уровне я не считаю твои баллы, но ты можешь заработать их в режиме ЭКЗАМЕН."
-                return reply, self.format_tts(reply)
+                text, tts = VoiceMenu().root.level_not_scored()
+            case _:
+                text, tts = self.__exam.get_stats_reply() if self.__exam.started \
+                    else VoiceMenu().root.no_score()
 
-        if self.__exam.started:
-            text, tts = self.__exam.get_stats_reply()
-            return text, tts
-        else:
-            reply = "Ты ещё не начал проходить музыкальный диктант на оценку. Выбери режим ЭКЗАМЕН в меню, и пройди все задания. В любое время при прохождении уровня, ты можешь попросить меня назвать набранные баллы."
-            return reply, self.format_tts(reply)
+        return text, tts
 
     def get_rules_reply(self) -> tuple[str, str]:
         text, tts = VoiceMenu().main_menu.rules
@@ -109,6 +106,7 @@ class MelDictEngineAlice(MelDictEngineBase):
     def process_user_reply(self, message: Message) -> tuple[str, str]:
         self._assert_mode()
         level: MelDictLevelBase = None
+        vm = VoiceMenu()
 
         match self.mode:
             case GameMode.MENU: # основное меню
@@ -138,28 +136,28 @@ class MelDictEngineAlice(MelDictEngineBase):
             text, tts = level.process_user_reply(message)
 
             if level.finished:
-                stat_reply = "Поздравляю, уровень завершён!"
+                complete_text, complete_tts = vm.root.level_complete()
                 stat_text = stat_tts = None
 
                 match self.mode:
                     case GameMode.DEMO:
                         pass
                     case GameMode.EXAM:
-                        stat_reply = "Поздравляю, экзамен пройден! Вот твои результаты:"
+                        complete_text, complete_tts = vm.root.exam_complete()
                         stat_text, stat_tts = level.get_stats_reply()
                     case GameMode.TRAIN:
                         stat_text, stat_tts = level.get_stats_reply()
                     case _:
-                        stat_reply = None
+                        complete_text = complete_tts = None
 
                 self.mode = GameMode.MENU
                 menu_text, menu_tts = self.get_reply()
 
-                text = self.format_text(text, "\n\n", stat_reply, stat_text, menu_text, sep="\n")
-                tts = self.format_tts(tts, stat_reply, stat_tts, menu_tts, sep="\n")
+                text = self.format_text(text, "\n\n", complete_text, stat_text, menu_text, sep="\n")
+                tts = self.format_tts(tts, complete_tts, stat_tts, menu_tts, sep="\n")
             return text, tts
 
-        text, tts = VoiceMenu().root.dont_understand()
+        text, tts = vm.root.dont_understand()
         return text, self.format_tts(tts)
 
     def get_audio_tag(self, nsf: str | MusicNoteSequence) -> str:
