@@ -14,9 +14,9 @@ class CmdFilter(BaseFilter):
         super().__init__()
 
     async def __call__(self, message: Message) -> bool:
-        if message.command == "": return True
+        if message.command == "": return False
         return CmdFilter.passed(message.command, self.__include, self.__exclude, self.__all_words)
-    
+
     def is_passed(self, command: str | Sequence[str]) -> bool:
         return CmdFilter.passed(command, self.__include, self.__exclude, self.__all_words)
 
@@ -26,7 +26,6 @@ class CmdFilter(BaseFilter):
         assert include
         command_words: Sequence[str] = command.lower().split(sep=" ") if isinstance(command, str) else command
 
-        fun = all if all_words else any
+        func = all if all_words else any
         return (exclude is None or not any(any(filter(lambda cmd: cmd.startswith(word), command_words)) for word in exclude)) \
-                and fun(any(cmd.startswith(word) for cmd in command_words) for word in include)
-            #   and fun(any(filter(lambda cmd: cmd.startswith(word), command_words)) for word in include)
+                and func(any(cmd.startswith(word) for cmd in command_words) for word in include)

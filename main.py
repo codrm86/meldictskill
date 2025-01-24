@@ -4,8 +4,10 @@ from aliceio.webhook.aiohttp_server import OneSkillAiohttpRequestHandler, setup_
 from aliceio.types import FSInputFile
 from aliceio import Skill
 from myconstants import *
-from config import Config, start_config_watcher
+from filewatcher import *
+from config import Config
 from watchdog.observers.api import BaseObserver
+from voicemenu import VoiceMenu
 import os
 import pandas as pd
 import asyncio
@@ -37,7 +39,7 @@ def configure_logger() -> logging.Logger:
 async def upload_websounds(skill: Skill):
     config = Config()
 
-    if config.data.upload_websounds != True:
+    if not config.data.upload_websounds:
         # logger.info(f"Пропуск удаления и загрузки звуков в навык.")
         return
 
@@ -85,13 +87,18 @@ async def upload_websounds(skill: Skill):
     logging.info(f"Файл {websounds_csv} записан")
 
 def main() -> None:
-    observer: BaseObserver = None
+    cfg_watcher: BaseObserver = None
+    vm_watcher: BaseObserver = None
+
     try:
         configure_logger()
         logging.info("*** Запуск навыка ***")
 
         config = Config.load(CONFIG_FILE)
-        observer = start_config_watcher(CONFIG_FILE)
+        cfg_watcher = start_file_watcher(CONFIG_FILE, Config.load)
+
+        VoiceMenu.load(config.data.voice_menu_file)
+        vm_watcher = start_file_watcher(config.data.voice_menu_file, VoiceMenu.load)
 
         logging.info(f"Skill-ID: {config.skill.id}, OAuth-Token: {config.skill.oauth_token}")
 
@@ -112,9 +119,12 @@ def main() -> None:
     except Exception as e:
         logging.fatal("Необработанное исключение", exc_info=e)
     finally:
-        if observer:
-            observer.stop()
-            observer.join()
+        if cfg_watcher:
+            cfg_watcher.stop()
+            cfg_watcher.join()
+        if vm_watcher:
+            vm_watcher.stop()
+            vm_watcher.join()
         logging.info("*** Остановка навыка ***")
 
 if __name__ == "__main__":

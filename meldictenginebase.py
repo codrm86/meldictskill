@@ -9,24 +9,20 @@ class MelDictEngineBase(ABC):
     def __init__(self, skill_id: str):
         assert skill_id and skill_id != ""
         self.__skill_id = skill_id
-        self.__mode = GameMode.UNKNOWN
+        self._mode = GameMode.UNKNOWN
 
     @property
     def skill_id(self) -> str: return self.__skill_id
 
     @property
-    def mode(self) -> int: return self.__mode
+    def mode(self) -> int: return self._mode
 
     @mode.setter
     def mode(self, value: int):
-        assert self.mode >= GameMode.UNKNOWN and self.mode <= GameMode.TASK # allowed to set unknown
-        self.__mode = value
+        self._mode = max(GameMode.UNKNOWN, value)
 
     def _assert_mode(self):
-        assert self.mode > GameMode.UNKNOWN and self.mode <= GameMode.TASK, "Режим не задан" # should not be unknown
-
-    # def reset(self):
-    #     self.mode = GameMode.MENU
+        assert self.mode >= GameMode.INIT, "Режим не задан" # should not be unknown
 
     @abstractmethod
     def get_stats_reply(self) -> tuple[str, str]:
@@ -37,7 +33,7 @@ class MelDictEngineBase(ABC):
         pass
 
     @abstractmethod
-    def process_user_reply(self, message: Message) -> tuple[str, str]:
+    def process_user_reply(self, message: Message, repeat: bool = False) -> tuple[str, str]:
         pass
 
     @abstractmethod
@@ -56,10 +52,10 @@ class MelDictEngineBase(ABC):
     def get_audio_tag(self, nsf: str | MusicNoteSequence) -> str:
         pass
 
-    def format_text(self, *args: Iterable[str]) -> str:
-        return self.__format_text(False, *args)
+    def format_text(self, *args: Iterable[str], sep = " ") -> str:
+        return self.__format_text(False, *args, sep=sep)
 
-    def __format_text(self, new_line: bool, *args: Iterable[str]) -> str:
+    def __format_text(self, new_line: bool, *args: Iterable[str], sep = " ") -> str:
         text = ""
 
         for value in args:
@@ -75,18 +71,18 @@ class MelDictEngineBase(ABC):
             if len(value) == 0:
                 continue
 
-            if not new_line and len(text) > 0 and value[0].isalnum():
-                text += " "
+            if not new_line and len(sep) > 0 and len(text) > 0 and value[0].isalnum():
+                text += sep
 
             text += value
             new_line = value[-1] == "\n"
 
         return text
 
-    def format_tts(self, *args: Iterable[str] | Iterable[MusicNoteSequence]) -> str:
-        return self.__format_tts(False, False, *args)[0]
+    def format_tts(self, *args: Iterable[str] | Iterable[MusicNoteSequence], sep = " ") -> str:
+        return self.__format_tts(False, False, *args, sep=sep)[0]
 
-    def __format_tts(self, new_line: bool, prev_tag: bool, *args: Iterable[str] | Iterable[MusicNoteSequence]) \
+    def __format_tts(self, new_line: bool, prev_tag: bool, *args: Iterable[str] | Iterable[MusicNoteSequence], sep = " ") \
         -> tuple[str, bool]:
         tts = ""
         for value in args:
@@ -107,8 +103,8 @@ class MelDictEngineBase(ABC):
             if len(value) == 0:
                 continue
 
-            if not new_line and not tag and len(tts) > 0 and value[0].isalnum():
-                tts += " "
+            if not new_line and not tag and len(sep) > 0 and len(tts) > 0 and value[0].isalnum():
+                tts += sep
 
             tts += value
             new_line = new_line if tag else value[-1] == "\n"

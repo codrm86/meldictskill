@@ -1,7 +1,8 @@
 /.venv
 /.vscode
 /__pycache__
-*.log
 websounds.csv
+websounds_test.csv
 *.key
 *.crt
+*.log

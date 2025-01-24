@@ -14,10 +14,11 @@ class MusicNoteSequence(Sequence):
     INVERSION_SECOND = 2
 
     def __init__(self, vertical: bool, *notes: Iterable[MusicNote] | Iterable[str],
-                 name: str = None,
+                 id: str = None,
                  base_chord: str = None,
                  chord_str: str = None,
                  interval_str: str = None,
+                 tts_name: str = None,
                  tonality_maj: bool = False,
                  chord_maj: bool = False,
                  prima_location: str | int = None,
@@ -28,14 +29,15 @@ class MusicNoteSequence(Sequence):
         self.__is_ascending, self.__missed_note, self.__notes = self.__parse_notes(notes)
         assert len(self) > 0
 
-        self.__name = name if name else ""
-        self.__base_chord = base_chord if base_chord else ""
+        self.__id = id if isinstance(id, str) else ""
+        self.__base_chord = base_chord if isinstance(base_chord, str) else ""
         self.__prima_location = MusicNoteSequence.PRIMALOC_UNKNOWN
         self.__inversion = MusicNoteSequence.INVERSION_UNKNOWN
         self.__is_tonic = self.__is_dominant = self.__is_subdominant = False
         self.__is_vertical = vertical == True
         self.__is_tonality_maj = tonality_maj == True
         self.__is_chord_maj = chord_maj == True
+        self.__tts_name = tts_name if isinstance(tts_name, str) and tts_name != "" else None
 
         # parse prima location
         if isinstance(prima_location, str):
@@ -53,13 +55,13 @@ class MusicNoteSequence(Sequence):
 
         # parse triad or interval characteristics and set title
         if self.is_triad and isinstance(chord_str, str):
-            self.__title = chord_str
+            self.__name = chord_str
             self.__is_tonic, self.__is_dominant, self.__is_subdominant = \
                 MusicNoteSequence.__parse_chord_str(chord_str)
         elif self.is_interval and isinstance(interval_str, str):
-            self.__title = interval_str
+            self.__name = interval_str
         else:
-            self.__title = ""
+            self.__name = ""
 
     @property
     def is_ascending(self) -> bool: return self.__is_ascending
@@ -76,7 +78,7 @@ class MusicNoteSequence(Sequence):
     @property
     def missed_note(self) -> int: return self.__missed_note
     @property
-    def name(self) -> str: return self.__name
+    def id(self) -> str: return self.__id
     @property
     def base_chord(self) -> str: return self.__base_chord
     @property
@@ -86,7 +88,11 @@ class MusicNoteSequence(Sequence):
     @property
     def is_chord_maj(self) -> bool: return self.__is_chord_maj
     @property
-    def title(self) -> str: return self.__title
+    def name(self) -> str: return self.__name
+    @property
+    def tts_name(self) -> str: return self.__tts_name if isinstance(self.__tts_name, str) and self.__tts_name != "" else self.name
+    @tts_name.setter
+    def tts_name(self, value: str): self.__tts_name = value
     @property
     def prima_location(self) -> int: return self.__prima_location
     @property

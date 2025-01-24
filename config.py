@@ -1,24 +1,10 @@
 from pydantic import BaseModel, Field
 import json
-import threading
 import os
 import logging
 from myconstants import *
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-
-# Потокобезопасный синглтон
-class SingletonMeta(type(BaseModel)):
-    _instance = None
-    _lock = threading.Lock()
-
-    def __call__(cls, *args, **kwargs):
-        """Возвращает существующий экземпляр или создаёт новый."""
-        with cls._lock:
-            if cls._instance is None or args or kwargs:
-                # Если экземпляр ещё не создан, создаём с использованием аргументов
-                cls._instance = super().__call__(*args, **kwargs)
-            return cls._instance
+from singleton import SingletonMeta
+from filewatcher import *
 
 # Pydantic модели конфигов
 class SSLConfig(BaseModel):
@@ -37,6 +23,8 @@ class DataConfig(BaseModel):
     websounds_folder: str = Field("sounds", description="Папка со звуковыми файлами")
     websounds_csv: str = Field("websounds.csv", description="CSV-файл с облачными идентификаторами загруженных звуков")
     main_csv: str = Field("main.csv", description="Основной CSV-файл с аккордами и интервалами")
+    tts_csv: str = Field("tts.csv", description="CSV-файл со словами в TTS-разметке")
+    voice_menu_file: str = Field("voice_menu.json", description="JSON-файл голосового меню")
 
 class SkillConfig(BaseModel):
     id: str = Field("", description="Идентификатор навыка")
@@ -70,26 +58,3 @@ class Config(BaseModel, metaclass=SingletonMeta):
             logging.error("Конфигурация не загружена")
             raise
 
-
-# Обработчик событий для Watchdog
-class ConfigHandler(FileSystemEventHandler):
-    def __init__(self, config_path: str):
-        self.config_path = os.path.abspath(config_path)
-
-    def on_modified(self, event):
-        if os.path.abspath(event.src_path) == self.config_path:
-            logging.info(f"Обнаружено изменение {self.config_path}")
-            try:
-                Config.load(self.config_path)
-            except Exception as e:
-                logging.error(f"Ошибка при перезагрузке конфигурации", exc_info=e)
-
-def start_config_watcher(config_path: str):
-    """Запускает наблюдателя для отслеживания изменений конфигурационного файла."""
-    event_handler = ConfigHandler(config_path)
-    observer = Observer()
-    folder_path = os.path.dirname(event_handler.config_path)
-    observer.schedule(event_handler, path=folder_path, recursive=False)
-    observer.start()
-    logging.info(f"Запущено наблюдение за изменениями {config_path}")
-    return observer

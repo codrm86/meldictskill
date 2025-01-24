@@ -1,4 +1,5 @@
 import os
+import logging
 import random as rnd
 from types import SimpleNamespace as dynamic
 from typing import Callable
@@ -8,7 +9,7 @@ from aliceio.types import Message
 from musicnotesequence import *
 from musicnote import *
 from meldictenginebase import *
-from meldicttask import *
+from meldictlevels import *
 from myfilters import *
 from myconstants import *
 
@@ -17,157 +18,149 @@ class MelDictEngineAlice(MelDictEngineBase):
         super().__init__(skill_id)
         self.__main_db = list[MusicNoteSequence]()
         self.__websounds = dict[str, str]()
+        self.__tts = dict()
         self.__first_run = True
-        self.__demo_task = DemoTask(self)
-        self.__missed_note_task = MissedNoteTask(self)
-        self.__cadence_task = CadenceTask(self)
-        self.__prima_loc_task = PrimaLocationTask(self)
-        self.__current_task = None
+        self.__demo_level = DemoLevel(self)
+        self.__missed_note_level = MissedNoteLevel(self)
+        self.__cadence_level = CadenceLevel(self)
+        self.__prima_loc_level = PrimaLocationLevel(self)
+        self.__exam = ExamLevel(self, self.__missed_note_level, self.__prima_loc_level, self.__cadence_level)
+        self.__current_level = None
+        self.__hamster = False
+
+    @property
+    def hamster(self): return self.__hamster
+    @hamster.setter
+    def hamster(self, value: bool): self.__hamster = value
+
+    @MelDictEngineBase.mode.setter
+    def mode(self, value: int):
+        self._mode = max(GameMode.UNKNOWN, value)
+        match value:
+            case GameMode.DEMO:
+                self.__current_level = None
+                self.__demo_level.reset()
+
+            case GameMode.EXAM:
+                self.__current_level = None
+                self.__exam.reset()
 
     def get_stats_reply(self) -> tuple[str, str]:
-        def format_reply(task: MelDictTaskBase, tts: bool):
-            def format_q(s):
-                mod100 = abs(s) % 100
-                if mod100 < 10 or mod100 > 20:
-                    mod10 = abs(s) % 10
-                    match mod10: # last digit from int
-                        case 1: return "вопрос"
-                        case 2 | 3 | 4: return "вопроса"
-                return "вопросов"
-            fmt_func = self.format_tts if tts else self.format_text
-            return fmt_func(f"В режиме «{task.tts_name if tts else task.display_name}» отвечено",
-                            f"на {task.correct_score} {format_q(task.correct_score)} правильно",
-                            f"и на {task.incorrect_score} {format_q(task.incorrect_score)} неправильно" if task.incorrect_score > 0 else "", ".")
+        match self.mode:
+            case GameMode.DEMO | GameMode.TRAIN:
+                reply = "В этом уровне я не считаю твои баллы, но ты можешь заработать их в режиме ЭКЗАМЕН."
+                return reply, self.format_tts(reply)
 
-        # в меню возвращаем статистику по всем задачам, по которым были набранны баллы
-        if self.mode == GameMode.MENU:
-            def reply_line(task: MelDictTaskBase, ts: bool) -> str:
-                return f"{format_reply(task, ts)}\n\n" if task.started else ""
+        if self.__exam.started:
+            text, tts = self.__exam.get_stats_reply()
+            return text, tts
+        else:
+            reply = "Ты ещё не начал проходить музыкальный диктант на оценку. Выбери режим ЭКЗАМЕН в меню, и пройди все задания. В любое время при прохождении уровня, ты можешь попросить меня назвать набранные баллы."
+            return reply, self.format_tts(reply)
 
-            text = self.format_text(
-                reply_line(self.__demo_task, False),
-                reply_line(self.__missed_note_task, False),
-                reply_line(self.__cadence_task, False),
-                reply_line(self.__prima_loc_task, False))
-
-            tts = self.format_tts(
-                reply_line(self.__demo_task, True),
-                reply_line(self.__missed_note_task, True),
-                reply_line(self.__cadence_task, True),
-                reply_line(self.__prima_loc_task, True))
-            
-            if text != "":
-                return text, tts
-
-        # во всех остальных режимах, возвращаем статистику по текущей задаче
-        task = self.__current_task
-
-        if task is None:
-            reply = "Ты ещё не прошёл ни один уровень. Выбери режим игры в меню, и пройди все задания. В любое время при прохождении уровня, ты можешь попросить меня назвать набранные баллы."
-            return reply, reply
-
-        if not task.started:
-            reply = "Ты не начал проходить уровень. Отвечай на вопросы в заданиях и набирай баллы, у тебя всё получится!"
-            return reply, reply
-
-        return format_reply(task, False), format_reply(task, True)
+    def get_rules_reply(self) -> tuple[str, str]:
+        text, tts = VoiceMenu().main_menu.rules
+        return text, tts
 
     def get_reply(self) -> tuple[str, str]:
         self._assert_mode()
 
+        level: MelDictLevelBase = None
+
         match self.mode:
             case GameMode.INIT:
-                reply = "Рада приветствовать тебя на музыкальном диктанте!\n"
+                self.mode = GameMode.MENU
                 noteseq = self.get_rnd_note_sequence(
                     lambda ns:
                         ns.is_vertical and (ns.is_chord_maj or ns.is_tonality_maj))
 
-                self.mode = GameMode.MENU
-                text, tts = self.get_reply()
-
-                text = self.format_text(
-                    reply, text)
-
-                tts = self.format_tts(
-                    reply, noteseq,
-                    tts)
-
+                greet = VoiceMenu().main_menu.greetings(first_run=True)
+                text, tts = greet(noteseq=self.get_audio_tag(noteseq))
                 return text, tts
 
             case GameMode.MENU: # основное меню
-                first_run, self.__first_run = self.__first_run, False
+                text, tts = VoiceMenu().main_menu.greetings()
+                return text, tts
 
-                def format_reply(ts):
-                    def get_name(task: MelDictTaskBase):
-                        return task.tts_name if ts else task.display_name
-                    reply = None
-                    if first_run:
-                        reply = "Доступно четыре уровня:\n" \
-                                f"1. {get_name(self.__demo_task)} - демонстрационный режим.\n" \
-                                f"2. {get_name(self.__missed_note_task)} - поиск пропущенного звука в аккорде.\n" \
-                                f"3. {get_name(self.__prima_loc_task)} - определение основного тона аккорда.\n"\
-                                f"4. {get_name(self.__cadence_task)} - угадывание аккорда в последовательности.\n" \
-                                f"\n" \
-                                f"Чтобы выйти в это меню, в любое время скажи:\n" \
-                                f"[Меню] или [Перезапуск].\n" \
-                                f"Для выхода из музыкального диктанта скажи:\n" \
-                                f"[Хватит]."
-                    else:
-                        reply =  f"Скажи [{get_name(self.__demo_task)}], чтобы запустить демонстрационный режим.\n" \
-                                 f"[{get_name(self.__missed_note_task)}] - чтобы искать пропущенный звук в аккорде.\n" \
-                                 f"[{get_name(self.__prima_loc_task)}], чтобы определять основной тон аккорда.\n" \
-                                 f"[{get_name(self.__cadence_task)}], чтобы угадывать аккорд в последовательности.\n" \
-                                  "Скажи [Меню] или [Перезапуск] чтобы выйти в это меню."
-                    if ts:
-                        reply = reply.replace("1", "первый") \
-                                     .replace("2", "второй") \
-                                     .replace("3", "третий") \
-                                     .replace("4", "четвёртый") \
-                                     .replace("[", "").replace("]", "!")
-                    return reply
-                return format_reply(False), format_reply(True)
+            case GameMode.DEMO:
+                level = self.__demo_level
 
-            case GameMode.TASK: # демо-режим
-                task = self.__current_task
-                result = task.get_reply() if task else (None, None)
-                if result: return result
+            case GameMode.TRAIN:
+                level = self.__current_level
 
-        text = tts = AliceReplies.DONT_UNDERSTAND
-        return text, tts
+            case GameMode.TRAIN_MENU:
+                vm = VoiceMenu()
+                train_menu = vm.main_menu.train_menu(
+                    missed_note=vm.levels.missed_note.name,
+                    prima_location=vm.levels.prima_location.name,
+                    cadence=vm.levels.cadence.name)
+                return train_menu
+
+            case GameMode.EXAM:
+                level = self.__exam
+
+        if level:
+            text, tts = level.get_reply()
+            return text, tts
+
+        text, tts = VoiceMenu().root.dont_understand()
+        return text, self.format_tts(tts)
 
     def process_user_reply(self, message: Message) -> tuple[str, str]:
         self._assert_mode()
+        level: MelDictLevelBase = None
 
         match self.mode:
             case GameMode.MENU: # основное меню
-                new_task: MelDictTaskBase = None
+                pass
+            case GameMode.DEMO: level = self.__demo_level
+            case GameMode.TRAIN: level = self.__current_level
+            case GameMode.EXAM: level = self.__exam
 
-                if CmdFilter.passed(message.command, ("демо", "1"), exclude=("нет", "не", "демотив")):
-                    new_task = self.__demo_task
-                elif CmdFilter.passed(message.command, ("пропущенн", "2"), exclude=("нет", "не", )):
-                    new_task = self.__missed_note_task
-                elif CmdFilter.passed(message.command, ("тоник", "3"), exclude=("нет", "не", "тонир", "тонал")):
-                    new_task = self.__prima_loc_task
-                elif CmdFilter.passed(message.command, ("каденци", "4"), exclude=("нет", "не", )):
-                    new_task = self.__cadence_task
+            case GameMode.TRAIN_MENU:
+                if CmdFilter.passed(message.command, ("пропущенн", "1"), exclude=("нет", "не", )):
+                    level = self.__missed_note_level
+                elif CmdFilter.passed(message.command, ("тоник", "2"), exclude=("нет", "не", "тонир", "тонал")):
+                    level = self.__prima_loc_level
+                elif CmdFilter.passed(message.command, ("каденци", "3"), exclude=("нет", "не", )):
+                    level = self.__cadence_level
 
-                if new_task:
-                    self.mode = GameMode.TASK
-                    new_task.show_right = True
-                    self.__current_task = new_task
-                    new_task.reset()
-                    return self.get_reply()
+                if level:
+                    level.reset()
+                    level.show_right = True
 
-            case GameMode.TASK:
-                task = self.__current_task
-                result = task.process_user_reply(message) if task else None
-                if result: return result
+                    self.mode = GameMode.TRAIN
+                    self.__current_level = level
+                    text, tts = level.get_reply()
+                    return text, tts
 
-            case _:
-                raise ValueError("Неизвестный режим")
+        if level:
+            text, tts = level.process_user_reply(message)
 
-        text = tts = AliceReplies.DONT_UNDERSTAND
-        return (text, tts.lower())
+            if level.finished:
+                stat_reply = "Поздравляю, уровень завершён!"
+                stat_text = stat_tts = None
+
+                match self.mode:
+                    case GameMode.DEMO:
+                        pass
+                    case GameMode.EXAM:
+                        stat_reply = "Поздравляю, экзамен пройден! Вот твои результаты:"
+                        stat_text, stat_tts = level.get_stats_reply()
+                    case GameMode.TRAIN:
+                        stat_text, stat_tts = level.get_stats_reply()
+                    case _:
+                        stat_reply = None
+
+                self.mode = GameMode.MENU
+                menu_text, menu_tts = self.get_reply()
+
+                text = self.format_text(text, "\n\n", stat_reply, stat_text, menu_text, sep="\n")
+                tts = self.format_tts(tts, stat_reply, stat_tts, menu_tts, sep="\n")
+            return text, tts
+
+        text, tts = VoiceMenu().root.dont_understand()
+        return text, self.format_tts(tts)
 
     def get_audio_tag(self, nsf: str | MusicNoteSequence) -> str:
         cloud_id = self.__websounds.get(nsf.file_name if isinstance(nsf, MusicNoteSequence) else nsf)
@@ -189,11 +182,12 @@ class MelDictEngineAlice(MelDictEngineBase):
         for noteseq in self.shuffle_note_sequences(predicate):
             return noteseq
 
-    async def load_data(self, main_csv: str, websounds_csv: str):
+    async def load_data(self, main_csv: str, websounds_csv: str, tts_csv: str = None):
         assert isinstance(main_csv, str) and main_csv != ""
         assert isinstance(websounds_csv, str) and websounds_csv != ""
 
         await self.__load_websounds(websounds_csv)
+        self.__load_tts(tts_csv)
         self.__main_db = self.__load_main_db(main_csv)
         self.mode = GameMode.INIT
 
@@ -203,19 +197,29 @@ class MelDictEngineAlice(MelDictEngineBase):
         csv = pd.read_csv(websounds_csv, sep=SEP, encoding=UTF8, index_col=False)
         self.__websounds = pd.Series(csv.cloud_id.values, csv.file_name).to_dict()
 
+    def __load_tts(self, tts_csv: str):
+        try:
+            if not os.path.isfile(tts_csv):
+                return
+
+            df = pd.read_csv(tts_csv, sep=SEP, encoding=UTF8)
+            df.text = df.text.str.lower()
+            self.__tts = df.set_index("text").tts.to_dict()
+        except Exception as e:
+            logging.error(f"Ошибка загрузки файла TTS \"{tts_csv}\"", exc_info=e)
+            pass
+
     def __load_main_db(self, main_csv: str) -> list[MusicNoteSequence]:
         if not os.path.isfile(main_csv):
             return
 
         df = pd.read_csv(main_csv, sep=SEP, encoding=UTF8, index_col="name")
-        # unavail_df = pd.DataFrame(columns=["file_name"])
-        data: list[MusicNoteSequence] = list()
-        # filenames = set()
+        data = list()
 
-        for name, row in df.iterrows():
+        for index, row in df.iterrows():
             noteseq = MusicNoteSequence(row.vertical,
                                         row.note_1, row.note_2, row.note_3,
-                                        name=name,
+                                        id=index,
                                         base_chord=row.base_chord,
                                         chord_str=row.chord_type,
                                         interval_str=row.interval,
@@ -224,15 +228,6 @@ class MelDictEngineAlice(MelDictEngineBase):
                                         prima_location=row.prima_location,
                                         inversion=row.inversion)
 
+            noteseq.tts_name = self.__tts.get(noteseq.name.lower(), None)
             data.append(noteseq)
-        #     file_name = noteseq.file_name
-
-        #     if file_name not in filenames:
-        #         filenames.add(file_name)
-        #         if file_name not in self.__websounds:
-        #             unavail_df.loc[len(unavail_df)] = [file_name]
-
-        # if len(unavail_df) > 0:
-        #     unavail_df.to_csv("web_sounds_unavailable.csv", sep=SEP, encoding=UTF8, index=False)
-
         return data

@@ -2,7 +2,7 @@
     "network":{
         "ip": "127.0.0.1",
         "port": 5000,
-        "path": "meldict",
+        "path": "",
         "ssl": {
             "enabled": false,
             "certfile": "meldict.crt",
@@ -12,12 +12,14 @@
     "data":{
         "upload_websounds": false,
         "websounds_folder": "sounds",
-        "websounds_csv": "websounds.csv",
-        "main_csv": "main.csv"
+        "websounds_csv": "websounds_test.csv",
+        "main_csv": "main.csv",
+        "tts_csv": "tts.csv",
+        "voice_menu_file": "voice_menu.json"
     },
     "skill": {
-        "id": "",
-        "oauth_token": ""
+        "id": "29e0749b-f6c3-4797-b926-14fa3d80e27c",
+        "oauth_token": "y0__wgBEMe57vECGKP3EyDI1rmIEiyzXhnk0ivXqMypydzD8VCs37il"
     },
     "debug":{
         "enabled": true
