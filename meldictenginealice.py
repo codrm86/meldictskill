@@ -1,10 +1,9 @@
 import os
 import logging
 import random as rnd
-from types import SimpleNamespace as dynamic
 from typing import Callable
 import pandas as pd
-from aliceio.types import Message
+from aliceio.types import Message, TextButton
 
 from musicnotesequence import *
 from musicnote import *
@@ -44,6 +43,18 @@ class MelDictEngineAlice(MelDictEngineBase):
             case GameMode.EXAM:
                 self.__current_level = None
                 self.__exam.reset()
+
+    def get_buttons(self) -> Iterable[TextButton]:
+        level = None
+        match self.mode:
+            case GameMode.DEMO:
+                level = self.__demo_level
+            case GameMode.TRAIN:
+                level = self.__current_level
+            case GameMode.EXAM:
+                level = self.__exam
+
+        return level.get_buttons() if level else None
 
     def get_stats_reply(self) -> tuple[str, str]:
         match self.mode:
@@ -103,8 +114,9 @@ class MelDictEngineAlice(MelDictEngineBase):
         text, tts = VoiceMenu().root.dont_understand()
         return text, self.format_tts(tts)
 
-    def process_user_reply(self, message: Message) -> tuple[str, str]:
+    def process_user_reply(self, message: Message = None, button: TextButton = None) -> tuple[str, str]:
         self._assert_mode()
+        assert message or button
         level: MelDictLevelBase = None
         vm = VoiceMenu()
 
@@ -133,7 +145,7 @@ class MelDictEngineAlice(MelDictEngineBase):
                     return text, tts
 
         if level:
-            text, tts = level.process_user_reply(message)
+            text, tts = level.process_user_reply(message, button)
 
             if level.finished:
                 complete_text, complete_tts = vm.root.level_complete()

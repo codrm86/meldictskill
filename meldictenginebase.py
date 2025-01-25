@@ -1,4 +1,5 @@
 from typing import Callable
+from aliceio.types import Message, TextButton
 from musicnotesequence import *
 from musicnote import *
 from myfilters import *
@@ -33,7 +34,7 @@ class MelDictEngineBase(ABC):
         pass
 
     @abstractmethod
-    def process_user_reply(self, message: Message, repeat: bool = False) -> tuple[str, str]:
+    def process_user_reply(self, message: Message = None, button: TextButton = None) -> tuple[str, str]:
         pass
 
     @abstractmethod

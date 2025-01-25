@@ -1,4 +1,3 @@
-from collections import Counter
 from typing import Sequence
 from aliceio.filters import BaseFilter
 from aliceio.types import Message

@@ -41,14 +41,14 @@ class MusicNoteSequence(Sequence):
 
         # parse prima location
         if isinstance(prima_location, str):
-            self.__prima_location = MusicNoteSequence.__prima_location_str_to_int(prima_location)
+            self.__prima_location = MusicNoteSequence.prima_location_str_to_int(prima_location)
         elif isinstance(prima_location, int):
             assert prima_location >= MusicNoteSequence.PRIMALOC_UNKNOWN and prima_location <= MusicNoteSequence.PRIMALOC_TOP
             self.__prima_location = prima_location
 
         # parse inversion
         if isinstance(inversion, str):
-            self.__inversion = MusicNoteSequence.__inversion_str_to_int(inversion)
+            self.__inversion = MusicNoteSequence.inversion_str_to_int(inversion)
         elif isinstance(inversion, int):
             assert inversion >= MusicNoteSequence.INVERSION_UNKNOWN and inversion <= MusicNoteSequence.INVERSION_SECOND
             self.__inversion = inversion
@@ -96,11 +96,11 @@ class MusicNoteSequence(Sequence):
     @property
     def prima_location(self) -> int: return self.__prima_location
     @property
-    def prima_location_str(self) -> str: return MusicNoteSequence.__prima_location_int_to_str(self.prima_location)
+    def prima_location_str(self) -> str: return MusicNoteSequence.prima_location_int_to_str(self.prima_location)
     @property
     def inversion(self) -> int: return self.__inversion
     @property
-    def inversion_str(self) -> str: return MusicNoteSequence.__inversion_int_to_str(self.__inversion)
+    def inversion_str(self) -> str: return MusicNoteSequence.inversion_int_to_str(self.__inversion)
     @property
     def file_name(self) -> str: return MusicNoteSequence.__get_file_name(self.__is_vertical, self)
 
@@ -143,7 +143,7 @@ class MusicNoteSequence(Sequence):
         return file_name + suffix
 
     @staticmethod
-    def __prima_location_str_to_int(prima_location: str) -> int:
+    def prima_location_str_to_int(prima_location: str) -> int:
         if prima_location and len(prima_location) > 0:
             prima_location = prima_location.lower()
             if "низ" in prima_location: return MusicNoteSequence.PRIMALOC_BOTTOM
@@ -153,7 +153,7 @@ class MusicNoteSequence(Sequence):
         return MusicNoteSequence.PRIMALOC_UNKNOWN
 
     @staticmethod
-    def __prima_location_int_to_str(prima_location: int) -> str:
+    def prima_location_int_to_str(prima_location: int) -> str:
         match prima_location:
             case MusicNoteSequence.PRIMALOC_BOTTOM: return "Внизу"
             case MusicNoteSequence.PRIMALOC_MIDDLE: return "В середине"
@@ -161,7 +161,7 @@ class MusicNoteSequence(Sequence):
         return ""
     
     @staticmethod
-    def __inversion_str_to_int(inversion: str) -> int:
+    def inversion_str_to_int(inversion: str) -> int:
         invrs = MusicNoteSequence.INVERSION_UNKNOWN
 
         if inversion and len(inversion) > 0:
@@ -173,7 +173,7 @@ class MusicNoteSequence(Sequence):
         return invrs
     
     @staticmethod
-    def __inversion_int_to_str(inversion: int) -> str:
+    def inversion_int_to_str(inversion: int) -> str:
         match inversion:
             case MusicNoteSequence.INVERSION_MAIN: return "Основной вид"
             case MusicNoteSequence.INVERSION_FIRST: return "Первое обращение"

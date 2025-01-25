@@ -1,6 +1,6 @@
 import random as rnd
 import threading
-from aliceio.types import Message
+from aliceio.types import Message, TextButton
 from aliceio.types.number_entity import NumberEntity
 from abc import ABC, abstractmethod
 
@@ -100,12 +100,13 @@ class MelDictLevelBase(ABC):
     def _get_reply(self) -> tuple[str, str]:
         pass
 
-    def process_user_reply(self, message: Message) -> tuple[str, str]:
+    def process_user_reply(self, message: Message = None, button: TextButton = None) -> tuple[str, str]:
+        assert message or button
         with self._rlock:
-            return self._process_user_reply(message) if not self.finished else (None, None)
+            return self._process_user_reply(message, button) if not self.finished else (None, None)
 
     @abstractmethod
-    def _process_user_reply(self, message: Message) -> tuple[str, str]:
+    def _process_user_reply(self, message: Message, button: TextButton) -> tuple[str, str]:
         pass
 
     def _select_start_reply(self, self_game_level: GameLevel = None) -> tuple[str, str]:
@@ -120,14 +121,35 @@ class MelDictLevelBase(ABC):
         first_run, self._first_run = self._first_run, False
         return first_run
 
-    def _get_last_number(self, message: Message) -> int:
-        for en in reversed(message.nlu.entities):
-            if isinstance(en.value, NumberEntity):
-                return int(en.value)
-
     @abstractmethod
     def _reset_secrets(self):
         pass
+
+    def get_buttons(self) -> Iterable[TextButton]:
+        pass
+
+    def _create_button(self, title: str, value: str | int) -> TextButton:
+        if not isinstance(value, str) and not isinstance(value, int):
+            return None
+
+        return TextButton(title=title if isinstance(title, str) and title != "" \
+                          else str(value), payload={ "value": value })
+
+    def _get_last_number(self, message: Message, button: TextButton) -> int:
+        if message:
+            for en in reversed(message.nlu.entities):
+                if isinstance(en.value, NumberEntity):
+                    return int(en.value)
+        elif button and button.payload:
+            value = button.payload.get("value")
+            if value: return int(value)
+
+        return None
+    
+    def _get_value(self, message: Message, button: TextButton) -> str | int:
+        if message: return message.command
+        if button and button.payload: return button.payload.get("value")
+        return None
 
     def _format_correct(self, text: str = "", tts: str = "") -> tuple[str, str]: # text, tts
         right_text, right_tts = VoiceMenu().root.rights()
@@ -164,6 +186,15 @@ class DemoLevel(MelDictLevelBase):
     def _reset_secrets(self):
         self.__current_noteseq = None
         self.__current_comparator = False
+
+    def get_buttons(self) -> Iterable[TextButton]:
+        if not self.finished:
+            answer = self.game_level.answers()
+            if answer:
+                title = answer.btn(note_pos = 0, note_cmp = self.__current_comparator)
+                yield self._create_button(title, 1)
+                title = answer.btn(note_pos = 1, note_cmp = self.__current_comparator)
+                yield self._create_button(title, 2)
 
     def __format_what(self, noteseq: MusicNoteSequence, vm: VoiceMenu = None) -> tuple[str, str]:
         text = tts = None
@@ -237,12 +268,12 @@ class DemoLevel(MelDictLevelBase):
             return text, tts
         raise NoReplyError()
 
-    def _process_user_reply(self, message: Message)-> tuple[str, str]:
+    def _process_user_reply(self, message: Message, button: TextButton)-> tuple[str, str]:
         noteseq = self.__current_noteseq
         comparator = self.__current_comparator
         if noteseq is None: NoReplyError("Интервал не выбран")
 
-        answer = self._get_last_number(message)
+        answer = self._get_last_number(message, button)
         if answer is None:
             text, tts = VoiceMenu().root.dont_understand()
             return text, self.engine.format_tts(tts)
@@ -289,6 +320,17 @@ class PrimaLocationLevel(MelDictLevelBase):
     def _reset_secrets(self):
         self.__current_noteseq = None
 
+    def get_buttons(self) -> Iterable[TextButton]:
+        if not self.finished:
+            answer = self.game_level.answers()
+            if answer:
+                title = answer.btn(prima_loc = MusicNoteSequence.PRIMALOC_BOTTOM)
+                yield self._create_button(title, MusicNoteSequence.PRIMALOC_BOTTOM)
+                title = answer.btn(prima_loc = MusicNoteSequence.PRIMALOC_MIDDLE)
+                yield self._create_button(title, MusicNoteSequence.PRIMALOC_MIDDLE)
+                title = answer.btn(prima_loc = MusicNoteSequence.PRIMALOC_TOP)
+                yield self._create_button(title, MusicNoteSequence.PRIMALOC_TOP)
+
     def __format_incorrect(self, noteseq: MusicNoteSequence) -> tuple[str, str]:
         text = tts = None
         if self.show_right:
@@ -334,22 +376,25 @@ class PrimaLocationLevel(MelDictLevelBase):
 
         raise NoReplyError()
 
-    def _process_user_reply(self, message: Message)-> tuple[str, str]:
+    def _process_user_reply(self, message: Message, button: TextButton)-> tuple[str, str]:
         noteseq = self.__current_noteseq
         answer = MusicNoteSequence.PRIMALOC_UNKNOWN
 
         if noteseq is None:
             raise NoReplyError("Трезвучие не выбрано")
 
-        if CmdFilter.passed(message.command, ("внизу", "снизу"), ("не", "нет")):
-            answer = MusicNoteSequence.PRIMALOC_BOTTOM
-        elif CmdFilter.passed(message.command, ("середин", "посреди", "посередин"), ("не", "нет")):
-            answer = MusicNoteSequence.PRIMALOC_MIDDLE
-        elif CmdFilter.passed(message.command, ("сверху", "наверху", "вверху"), ("не", "нет")):
-            answer = MusicNoteSequence.PRIMALOC_TOP
-        else:
-            text, tts = VoiceMenu().root.dont_understand()
-            return text, self.engine.format_tts(tts)
+        answer = self._get_value(message, button)
+
+        if isinstance(answer, str):
+            if answer and CmdFilter.passed(answer, ("внизу", "снизу"), ("не", "нет")):
+                answer = MusicNoteSequence.PRIMALOC_BOTTOM
+            elif answer and CmdFilter.passed(answer, ("середин", "посреди", "посередин"), ("не", "нет")):
+                answer = MusicNoteSequence.PRIMALOC_MIDDLE
+            elif answer and CmdFilter.passed(answer, ("сверху", "наверху", "вверху"), ("не", "нет")):
+                answer = MusicNoteSequence.PRIMALOC_TOP
+            else:
+                text, tts = VoiceMenu().root.dont_understand()
+                return text, self.engine.format_tts(tts)
 
         reply_text = reply_tts = None
         if answer == noteseq.prima_location:
@@ -388,6 +433,17 @@ class CadenceLevel(MelDictLevelBase):
     def _reset_secrets(self):
         self.__cadence = None
         self.__guessed_index = 0
+
+    def get_buttons(self) -> Iterable[TextButton]:
+        if not self.finished:
+            answer = self.game_level.answers()
+            if answer:
+                title = answer.btn(chord_pos = 0)
+                yield self._create_button(title, 1)
+                title = answer.btn(chord_pos = 1)
+                yield self._create_button(title, 2)
+                title = answer.btn(chord_pos = 2)
+                yield self._create_button(title, 3)
 
     def __format_what(self, noteseq: MusicNoteSequence) -> tuple[str, str]:
         text = tts = None
@@ -473,14 +529,14 @@ class CadenceLevel(MelDictLevelBase):
         raise NoReplyError()
 
 
-    def _process_user_reply(self, message: Message)-> tuple[str, str]:
+    def _process_user_reply(self, message: Message, button: TextButton)-> tuple[str, str]:
         cadence = self.__cadence
         guessed_index = self.__guessed_index
 
         if cadence is None:
             raise NoReplyError("Каденция не создана")
 
-        answer = self._get_last_number(message)
+        answer = self._get_last_number(message, button)
         if answer is None:
             text, tts = VoiceMenu().root.dont_understand()
             return text, self.engine.format_tts(tts)
@@ -520,6 +576,21 @@ class MissedNoteLevel(MelDictLevelBase):
     @property
     def game_level(self) -> GameLevel: return VoiceMenu().levels.missed_note
 
+    def _reset_secrets(self):
+        self.__interval = None
+        self.__chord = None
+
+    def get_buttons(self) -> Iterable[TextButton]:
+        if not self.finished:
+            answer = self.game_level.answers()
+            if answer:
+                title = answer.btn(note_pos = 0)
+                yield self._create_button(title, 1)
+                title = answer.btn(note_pos = 1)
+                yield self._create_button(title, 2)
+                title = answer.btn(note_pos = 2)
+                yield self._create_button(title, 3)
+
     def __format_what(self, chord: MusicNoteSequence, interval: MusicNoteSequence) -> tuple[str, str]:
         gamelevel = self.game_level
         what = gamelevel.whats()
@@ -550,10 +621,6 @@ class MissedNoteLevel(MelDictLevelBase):
                   f"Ответ: {answer}\n" if answer else None,
                   f"Аккорд: {chord.file_name}, {chord.id}, {'maj' if chord.is_chord_maj else 'min'}, {chord}\n\n",
                   f"Интервал: {chord.file_name}, {interval.id}, {interval.base_chord}, {interval}, пропуск: {interval.missed_note + 1}\n\n"]
-
-    def _reset_secrets(self):
-        self.__interval = None
-        self.__chord = None
 
     def _get_reply(self):
         interval = self.__interval
@@ -599,14 +666,14 @@ class MissedNoteLevel(MelDictLevelBase):
 
         raise NoReplyError()
 
-    def _process_user_reply(self, message):
+    def _process_user_reply(self, message: Message, button: TextButton):
         interval = self.__interval
         chord = self.__chord
 
         if interval is None:
             raise NoReplyError("Интервал не выбран")
 
-        answer = self._get_last_number(message)
+        answer = self._get_last_number(message, button)
         if answer is None:
             text, tts = VoiceMenu().root.dont_understand()
             return text, self.engine.format_tts(tts)
@@ -664,6 +731,11 @@ class ExamLevel(MelDictLevelBase):
     def finished(self):
         return all(level.finished for level in self.__levels)
 
+    def get_buttons(self):
+        for level in self.__levels:
+            if not level.finished:
+                return level.get_buttons()
+
     def reset(self):
         super().reset()
         for level in self.__levels:
@@ -697,13 +769,13 @@ class ExamLevel(MelDictLevelBase):
 
         return None, None
 
-    def _process_user_reply(self, message):
+    def _process_user_reply(self, message: Message, button: TextButton):
         texts = []
         ttss = []
 
         for level in self.__levels:
             if not level.finished:
-                text, tts = level.process_user_reply(message)
+                text, tts = level.process_user_reply(message, button)
                 texts.append(text)
                 ttss.append(tts)
 

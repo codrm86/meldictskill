@@ -1,4 +1,4 @@
-from typing import Optional, TypeVar, Generic, ClassVar
+from typing import Optional, Any, TypeVar, Generic, ClassVar
 from pydantic import RootModel, BaseModel, Field
 from collections.abc import Callable
 from myconstants import *
@@ -25,6 +25,7 @@ class RandomCollection(RootModel[list[T]], Generic[T]):
     def __call__(self):
         return self.rnd()
 
+
 class TextTTS(BaseModel):
     text: str = Field()
     original_tts: Optional[str] = Field(default=None, alias="tts")
@@ -48,11 +49,9 @@ class TextTTS(BaseModel):
 class Format(TextTTS):
     arguments: Optional[dict[str, dict[str, TextTTS]]]  = Field(default_factory=lambda: dict())
 
-    def __format(self, tts: bool, **kwargs):
-        source = self.tts if tts else self.text
-
-        if not isinstance(source, str): return None
-        if len(source) == 0: return ""
+    def _format(self, source: str, tts: bool, **kwargs):
+        if not isinstance(source, str) or len(source) == 0:
+            return ""
 
         for key, value in kwargs.items():
             arg = self.arguments.get(key)
@@ -72,42 +71,70 @@ class Format(TextTTS):
 
         return source.format(**kwargs) if len(kwargs) else source
 
-    def __call__(self, **kwargs) -> tuple[str, str]:
-        text = self.__format(False, **kwargs)
-        tts = self.__format(True, **kwargs)
+    def format(self, **kwargs) -> tuple[str, str]:
+        text = self._format(self.text, False, **kwargs)
+        tts = self._format(self.tts, True, **kwargs)
         return text, tts if tts else text
+
+    def __call__(self, **kwargs) -> tuple[str, str]:
+        return self.format(**kwargs)
+
+
+class FormatButton(Format):
+    button: str = Field(default=None)
+
+    def btn(self, **kwargs) -> str:
+        text = self._format(self.button, False, **kwargs)
+        if text and len(text) > 0 and text[0].isalpha() and text[0].islower(): text = text[0].capitalize() + text[1:]
+        return text
 
 
 class TextTTSRndCollection(RandomCollection[TextTTS]):
-    Default: ClassVar[TextTTS] = TextTTS(text="")
+    DEFAULT: ClassVar[TextTTS] = TextTTS(text="")
 
     def rnd(self) -> TextTTS:
         return random.choice(self.root) \
-            if isinstance(self.root, list) and len(self.root) > 0 else TextTTSRndCollection.Default
+            if isinstance(self.root, list) and len(self.root) > 0 else TextTTSRndCollection.DEFAULT
 
     def __getitem__(self, index) -> TextTTS:
-        return self.root[index] if isinstance(self.root, list) else TextTTSRndCollection.Default
+        return self.root[index] if isinstance(self.root, list) else TextTTSRndCollection.DEFAULT
     
     def __call__(self) -> TextTTS:
         return self.rnd()
 
+
 class FormatRndCollection(RandomCollection[Format]):
-    Default: ClassVar[Format] = Format(text="")
+    DEFAULT: ClassVar[Format] = Format(text="")
 
     def rnd(self) -> Format:
         return random.choice(self.root) \
-            if isinstance(self.root, list) and len(self.root) > 0 else FormatRndCollection.Default
+            if isinstance(self.root, list) and len(self.root) > 0 else FormatRndCollection.DEFAULT
 
     def __getitem__(self, index) -> Format:
-        return self.root[index] if isinstance(self.root, list) else FormatRndCollection.Default
+        return self.root[index] if isinstance(self.root, list) else FormatRndCollection.DEFAULT
     
     def __call__(self) -> Format:
         return self.rnd()
 
+
+class FormatButtonRndCollection(RandomCollection[FormatButton]):
+    DEFAULT: ClassVar[FormatButton] = FormatButton(text="")
+
+    def rnd(self) -> FormatButton:
+        return random.choice(self.root) \
+            if isinstance(self.root, list) and len(self.root) > 0 else FormatButtonRndCollection.DEFAULT
+
+    def __getitem__(self, index) -> FormatButton:
+        return self.root[index] if isinstance(self.root, list) else FormatButtonRndCollection.DEFAULT
+    
+    def __call__(self) -> FormatButton:
+        return self.rnd()
+
+
 class Greetings(BaseModel):
     initial_run: Format = Field(default_factory=lambda: Format(text=""))
     first_run: Format = Field()
-    second_run: Optional[Format] = Field(default_factory=lambda: Format(text=""))
+    second_run: Format = Field()
 
     def __call__(self, initial_run: bool = False, first_run: bool = False):
         return self.initial_run if initial_run \
@@ -143,7 +170,7 @@ class GameLevel(Replies):
     name: TextTTS = Field()
     tasks: FormatRndCollection = Field()
     questions: FormatRndCollection = Field()
-    answers: FormatRndCollection = Field()
+    answers: FormatButtonRndCollection = Field()
     whats: FormatRndCollection = Field()
     continues: FormatRndCollection = Field()
 
@@ -162,16 +189,16 @@ class VoiceMenu(BaseModel, metaclass=SingletonMeta):
     levels: GameLevels = Field()
 
     @classmethod
-    def load(cls, config_path: str):
+    def load(cls, file_name: str):
         """Загружает и валидирует голосовое меню из JSON-файла."""
         try:
             logging.info("Загрузка голосового меню")
-            config_data = None
+            json_data = None
 
-            with open(config_path, "r", encoding=UTF8) as file:
-                config_data = json.load(file)
+            with open(file_name, "r", encoding=UTF8) as file:
+                json_data = json.load(file)
 
-            config = cls(**config_data)
+            config = cls(**json_data)
             logging.info("Голосовое меню загружено")
 
             return config
