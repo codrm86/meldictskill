@@ -182,7 +182,7 @@ async def stats_message_handler(message: Message, state: FSMContext) -> AliceRes
 
 
 @dispatcher.message(F.nlu.intents["rules"])
-async def stats_message_handler(message: Message, state: FSMContext) -> AliceResponse:
+async def rules_message_handler(message: Message, state: FSMContext) -> AliceResponse:
     text = tts = ""
     engine = None
 
