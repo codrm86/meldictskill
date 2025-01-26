@@ -451,7 +451,7 @@ class CadenceLevel(MelDictLevelBase):
             what = self.game_level.whats()
             text, tts = what(
                 neuter=noteseq.name.endswith('е'),
-                name=lambda s: (noteseq.tts_name if s else noteseq.name).lower())
+                chord_name=lambda s: (noteseq.tts_name if s else noteseq.name).lower())
         return text, tts
 
     def __format_correct(self, noteseq: MusicNoteSequence) -> tuple[str, str]:
@@ -489,15 +489,15 @@ class CadenceLevel(MelDictLevelBase):
             maj = bool(rnd.getrandbits(1))
 
             tns = self.engine.get_rnd_note_sequence(
-                lambda ns: ns.is_tonic and ns.is_tonality_maj == maj and not ns.is_vertical)
+                lambda ns: ns.is_tonic and ns.is_tonality_maj == maj and ns.is_vertical)
             if tns is None: raise NoReplyError(f"Не удалось выбрать тонику: {'maj' if maj else 'min'}, arp")
 
             sdns = self.engine.get_rnd_note_sequence(
-                lambda ns: ns.is_subdominant and ns.is_tonality_maj == maj and not ns.is_vertical)
+                lambda ns: ns.is_subdominant and ns.is_tonality_maj == maj and ns.is_vertical)
             if sdns is None: raise NoReplyError(f"Не удалось найти субдоминанту: {'maj' if maj else 'min'}, arp")
 
             dns = self.engine.get_rnd_note_sequence(
-                lambda ns: ns.is_dominant and ns.is_tonality_maj == maj and not ns.is_vertical)
+                lambda ns: ns.is_dominant and ns.is_tonality_maj == maj and ns.is_vertical)
             if dns is None: raise NoReplyError(f"Не удалось найти доминанту: {'maj' if maj else 'min'}, arp")
 
             cadence = self.__cadence = rnd.sample([tns, sdns, dns], 3) # shuffle cadence
@@ -509,8 +509,9 @@ class CadenceLevel(MelDictLevelBase):
             question_text, question_tts = gamelevel.questions()
             
             task_text, task_tts = gamelevel.tasks()(
-                    chord=self.engine.get_audio_tag(cadence[guessed_index]),
-                    cadence=self.engine.format_tts(cadence))
+                    chord_arp = self.engine.get_audio_tag(MusicNoteSequence.get_file_name(False, cadence[guessed_index])),
+                    chord_vert = self.engine.get_audio_tag(cadence[guessed_index]),
+                    cadence = self.engine.format_tts(cadence))
 
             debug = self.__debug(cadence, guessed_index)
 

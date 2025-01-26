@@ -54,7 +54,11 @@ class MelDictEngineAlice(MelDictEngineBase):
             case GameMode.EXAM:
                 level = self.__exam
 
-        return level.get_buttons() if level else None
+        if level:
+            for btn in level.get_buttons():
+                yield btn
+
+            yield TextButton(title=VoiceMenu().levels.repeat_buttons().text, payload={ "repeat": True })
 
     def get_stats_reply(self) -> tuple[str, str]:
         match self.mode:
@@ -90,19 +94,19 @@ class MelDictEngineAlice(MelDictEngineBase):
                 text, tts = VoiceMenu().main_menu.greetings()
                 return text, tts
 
+            case GameMode.TRAIN_MENU:
+                vm = VoiceMenu()
+                train_menu = vm.main_menu.train_menu(
+                    missed_note = vm.levels.missed_note.name,
+                    prima_location = vm.levels.prima_location.name,
+                    cadence = vm.levels.cadence.name)
+                return train_menu
+
             case GameMode.DEMO:
                 level = self.__demo_level
 
             case GameMode.TRAIN:
                 level = self.__current_level
-
-            case GameMode.TRAIN_MENU:
-                vm = VoiceMenu()
-                train_menu = vm.main_menu.train_menu(
-                    missed_note=vm.levels.missed_note.name,
-                    prima_location=vm.levels.prima_location.name,
-                    cadence=vm.levels.cadence.name)
-                return train_menu
 
             case GameMode.EXAM:
                 level = self.__exam
@@ -117,6 +121,7 @@ class MelDictEngineAlice(MelDictEngineBase):
     def process_user_reply(self, message: Message = None, button: TextButton = None) -> tuple[str, str]:
         self._assert_mode()
         assert message or button
+
         level: MelDictLevelBase = None
         vm = VoiceMenu()
 
@@ -145,6 +150,10 @@ class MelDictEngineAlice(MelDictEngineBase):
                     return text, tts
 
         if level:
+            # если была нажата кнопка повтора
+            if not level.finished and button and button.payload and button.payload.get("repeat", False):
+                return level.get_reply()
+
             text, tts = level.process_user_reply(message, button)
 
             if level.finished:
@@ -158,7 +167,7 @@ class MelDictEngineAlice(MelDictEngineBase):
                         complete_text, complete_tts = vm.root.exam_complete()
                         stat_text, stat_tts = level.get_stats_reply()
                     case GameMode.TRAIN:
-                        stat_text, stat_tts = level.get_stats_reply()
+                        pass
                     case _:
                         complete_text = complete_tts = None
 

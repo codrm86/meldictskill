@@ -102,7 +102,7 @@ class MusicNoteSequence(Sequence):
     @property
     def inversion_str(self) -> str: return MusicNoteSequence.inversion_int_to_str(self.__inversion)
     @property
-    def file_name(self) -> str: return MusicNoteSequence.__get_file_name(self.__is_vertical, self)
+    def file_name(self) -> str: return MusicNoteSequence.get_file_name(self.__is_vertical, self)
 
     def __iter__(self):
         self.__note_index = 0
@@ -126,7 +126,7 @@ class MusicNoteSequence(Sequence):
         return "".join(str(note) for note in self.__notes)
 
     @staticmethod
-    def __get_file_name(vertical: bool, notes: Iterable[MusicNote]) -> str:
+    def get_file_name(vertical: bool, notes: Iterable[MusicNote]) -> str:
         suffix = ""
         file_name = ""
         count = 0

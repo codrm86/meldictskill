@@ -181,6 +181,7 @@ class GameLevels(BaseModel):
     prima_location: GameLevel = Field()
     cadence: GameLevel = Field()
     exam: GameLevel = Field()
+    repeat_buttons: TextTTSRndCollection = Field(default_factory=lambda: TextTTS(text="Повторить"))
 
 
 class VoiceMenu(BaseModel, metaclass=SingletonMeta):
