@@ -162,8 +162,9 @@ class RootLevel(BaseModel):
 
 
 class MenuLevel(Replies):
-    train_menu: Format = Field()
-    rules: TextTTS = Field()
+    train_menu: FormatButton = Field()
+    rules: FormatButton = Field()
+    back: FormatButton = Field(default_factory=lambda: FormatButton(text="Назад", button="Назад"))
 
 
 class GameLevel(Replies):

@@ -19,7 +19,7 @@ rlock = threading.RLock()
 def format_error(text: str, e: Exception) -> str:
     if Config().debug.enabled:
         debug = "\n".join(tb.format_exception(e))
-        max_len = 1024 - len(text)
+        max_len = 1024 - len(text) - 1
         debug = debug if len(debug) <= max_len else debug[:max_len]
         text = f"{text}\n{debug}"
 
@@ -111,18 +111,7 @@ async def mode_message_handler(message: Message, state: FSMContext, mode: str) -
         if engine is None: # сообщение пришло без создания сессии
             return await start_session(message, state)
 
-        if engine.mode == GameMode.MENU:
-            if CmdFilter.passed(mode, ("демо", "продемонстрир")):
-                engine.mode = GameMode.DEMO
-            elif CmdFilter.passed(mode, ("трениро", "потренир")):
-                engine.mode = GameMode.TRAIN_MENU
-            elif CmdFilter.passed(mode, "экзамен"):
-                engine.mode = GameMode.EXAM
-
-        if engine.mode != GameMode.MENU:
-            text, tts = engine.get_reply()
-        else:
-            text, tts = VoiceMenu().root.dont_understand()
+        text, tts = engine.process_user_reply(message, mode)
     except Exception as e:
         logging.error(message.command, exc_info=e)
         text, tts = VoiceMenu().root.something_went_wrong()
@@ -141,19 +130,7 @@ async def back_message_handler(message: Message, state: FSMContext, engine: MelD
         if engine is None: # сообщение пришло без создания сессии
             return await start_session(message, state)
 
-        match engine.mode:
-            case GameMode.MENU:
-                text, tts = VoiceMenu().root.no_way_back()
-                return create_response(text, tts, engine)
-            case GameMode.DEMO | GameMode.TRAIN_MENU | GameMode.EXAM:
-                engine.mode = GameMode.MENU
-            case GameMode.TRAIN:
-                engine.mode = GameMode.TRAIN_MENU
-            case _:
-                text, tts = VoiceMenu().root.dont_understand()
-                return create_response(text, tts, engine)
-
-        text, tts = engine.get_reply()
+        text, tts = engine.process_back_action()
     except Exception as e:
         logging.error(message.command, exc_info=e)
         text, tts = VoiceMenu().root.something_went_wrong()
@@ -250,7 +227,7 @@ async def message_handler(message: Message, state: FSMContext) -> AliceResponse:
         if engine is None: # сообщение пришло без создания сессии
             return await start_session(message, state)
 
-        repeat = message.nlu.intents.get("YANDEX.REPEAT") is not None or message.nlu.intents.get("repeat") is not None 
+        repeat = message.nlu.intents.get("YANDEX.REPEAT") is not None or message.nlu.intents.get("repeat") is not None
         text, tts = engine.process_user_reply(message) if not repeat \
             else engine.get_reply()
     except Exception as e:
@@ -272,7 +249,7 @@ async def button_pressed_handler(button: TextButton, state: FSMContext):
             engine = await get_engine(button.skill.id, button.session.session_id, state, True)
             return engine.get_reply()
 
-        text, tts = engine.process_user_reply(button=button)
+        text, tts = engine.process_button_pressed(button)
     except Exception as e:
         logging.error(button.payload, exc_info=e)
         text, tts = VoiceMenu().root.something_went_wrong()

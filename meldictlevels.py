@@ -31,6 +31,10 @@ class MelDictLevelBase(ABC):
         self._rlock = threading.RLock()
 
     @property
+    @abstractmethod
+    def id(self) -> int: pass
+
+    @property
     def name(self) -> str: return self.game_level.name.text
 
     @property
@@ -181,6 +185,9 @@ class DemoLevel(MelDictLevelBase):
         self.__current_comparator = False
 
     @property
+    def id(self) -> int: return 0
+
+    @property
     def game_level(self) -> GameLevel: return VoiceMenu().levels.demo
 
     def _reset_secrets(self):
@@ -315,6 +322,9 @@ class PrimaLocationLevel(MelDictLevelBase):
         self.__current_noteseq = None
 
     @property
+    def id(self) -> int: return 2
+
+    @property
     def game_level(self) -> GameLevel: return VoiceMenu().levels.prima_location
 
     def _reset_secrets(self):
@@ -426,6 +436,9 @@ class CadenceLevel(MelDictLevelBase):
         super().__init__(engine, first_run)
         self.__cadence = None
         self.__guessed_index = 0
+
+    @property
+    def id(self) -> int: return 3
 
     @property
     def game_level(self) -> GameLevel: return VoiceMenu().levels.cadence
@@ -575,6 +588,9 @@ class MissedNoteLevel(MelDictLevelBase):
         self.__chord = None
 
     @property
+    def id(self) -> int: return 1
+
+    @property
     def game_level(self) -> GameLevel: return VoiceMenu().levels.missed_note
 
     def _reset_secrets(self):
@@ -714,6 +730,9 @@ class ExamLevel(MelDictLevelBase):
                  first_run = True):
         super().__init__(engine, first_run)
         self.__levels = missed_note_level, prima_location_level, cadence_level
+
+    @property
+    def id(self) -> int: return 100
 
     @property
     def game_level(self) -> GameLevel: return VoiceMenu().levels.exam
