@@ -5,23 +5,24 @@
         "path": "",
         "ssl": {
             "enabled": false,
-            "certfile": "meldict.crt",
-            "keyfile": "meldict.key"
+            "certfile": "data/meldict.crt",
+            "keyfile": "data/meldict.key"
         }
     },
     "data":{
         "upload_websounds": false,
-        "websounds_folder": "sounds",
-        "websounds_csv": "websounds_test.csv",
-        "main_csv": "main.csv",
-        "tts_csv": "tts.csv",
-        "voice_menu_file": "voice_menu.json"
+        "websounds_folder": "data/sounds",
+        "websounds_db": "data/websounds_test.csv",
+        "sound_font": "data/default_sound_font.sf2",
+        "main_db": "data/main.csv",
+        "tts_db": "data/tts.csv",
+        "voice_menu": "voice_menu.json"
     },
     "skill": {
         "id": "29e0749b-f6c3-4797-b926-14fa3d80e27c",
         "oauth_token": ""
     },
     "debug":{
-        "enabled": true
+        "enabled": false
     }
 }

@@ -1,9 +1,9 @@
-from typing import Sequence
+from typing import Iterable
 from aliceio.filters import BaseFilter
 from aliceio.types import Message
 
 class CmdFilter(BaseFilter):
-    def __init__(self, include: str | Sequence[str], exclude: str | Sequence[str] = None, all_words: bool = False) -> None:
+    def __init__(self, include: str | Iterable[str], exclude: str | Iterable[str] = None, all_words: bool = False) -> None:
         assert include
         include = include.split(sep=" ") if isinstance(include, str) else include
         exclude = exclude.split(sep=" ") if isinstance(exclude, str) else exclude if exclude else []
@@ -16,14 +16,14 @@ class CmdFilter(BaseFilter):
         if message.command == "": return False
         return CmdFilter.passed(message.command, self.__include, self.__exclude, self.__all_words)
 
-    def is_passed(self, command: str | Sequence[str]) -> bool:
+    def is_passed(self, command: str | Iterable[str]) -> bool:
         return CmdFilter.passed(command, self.__include, self.__exclude, self.__all_words)
 
     @staticmethod
-    def passed(command: str | Sequence[str], include: Sequence[str], exclude: Sequence[str] = None, all_words = False) -> bool:
+    def passed(command: str | Iterable[str], include: Iterable[str], exclude: Iterable[str] = None, all_words = False) -> bool:
         assert command
         assert include
-        command_words: Sequence[str] = command.lower().split(sep=" ") if isinstance(command, str) else command
+        command_words: Iterable[str] = command.lower().split(sep=" ") if isinstance(command, str) else command
 
         func = all if all_words else any
         return (exclude is None or not any(any(filter(lambda cmd: cmd.startswith(word), command_words)) for word in exclude)) \

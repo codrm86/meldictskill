@@ -3,21 +3,22 @@ import threading
 from aliceio.types import Message, TextButton
 from aliceio.types.number_entity import NumberEntity
 from abc import ABC, abstractmethod
+from typing import Iterable
 
 from config import Config
-from voicemenu import *
-from musicnotesequence import *
-from musicnote import *
+from voicemenu import VoiceMenu, GameLevel
+from musicnotesequence import MusicNoteSequence
 from meldictenginebase import MelDictEngineBase
-from myfilters import *
+from myfilters import CmdFilter
 from myconstants import *
+from maindb import MainDB
 
 class NoReplyError(ValueError):
     def __init__(self, msg: str = "Нет реплики"):
         super().__init__(msg)
 
 class MelDictLevelBase(ABC):
-    MaxTasksCount = 9
+    MAX_TASK_COUNT = 9
     _rlock: threading.RLock
 
     def __init__(self, engine: MelDictEngineBase, first_run: bool = True):
@@ -73,7 +74,7 @@ class MelDictLevelBase(ABC):
     def started(self): return self.total_score > 0
 
     @property
-    def finished(self): return self.total_score >= MissedNoteLevel.MaxTasksCount
+    def finished(self): return self.total_score >= MissedNoteLevel.MAX_TASK_COUNT
 
     def reset(self):
         with self._rlock:
@@ -198,9 +199,9 @@ class DemoLevel(MelDictLevelBase):
         if not self.finished:
             answer = self.game_level.answers()
             if answer:
-                title = answer.btn(note_pos = 0, note_cmp = self.__current_comparator)
+                title = answer.btn(item_number = 1, note_pos = 0, note_cmp = self.__current_comparator)
                 yield self._create_button(title, 1)
-                title = answer.btn(note_pos = 1, note_cmp = self.__current_comparator)
+                title = answer.btn(item_number = 2, note_pos = 1, note_cmp = self.__current_comparator)
                 yield self._create_button(title, 2)
 
     def __format_what(self, noteseq: MusicNoteSequence, vm: VoiceMenu = None) -> tuple[str, str]:
@@ -240,22 +241,21 @@ class DemoLevel(MelDictLevelBase):
              else [f"\n#DEBUG\n",
                    f"Ответ: {answer}\n" if answer else None,
                    f"Интервал: {noteseq.file_name}, {noteseq.id}, {noteseq}\n",
-                   f"Сравн.: {'>' if comparator else '<'}\n\n"]
+                   f"Сравн.: {'>' if comparator else '<'}\n"]
 
     def get_stats_reply(self, format_name: bool = True) -> tuple[str, str]:
         return None, None
 
     def _get_reply(self)-> tuple[str, str]:
+        main_db = MainDB()
         noteseq = self.__current_noteseq
         comparator = self.__current_comparator
 
         if noteseq is None:
             noteseq = self.__current_noteseq = \
-                self.engine.get_rnd_note_sequence(
+                main_db.rnd(
                     lambda ns:
-                        ns != self.__current_noteseq and
-                        ns.is_interval and
-                        not ns.is_vertical)
+                        ns.is_interval and not ns.is_vertical)
 
             comparator = self.__current_comparator = bool(rnd.getrandbits(1))
 
@@ -352,13 +352,14 @@ class PrimaLocationLevel(MelDictLevelBase):
         return None if not Config().debug.enabled \
              else [f"\n#DEBUG\n",
                    f"Код ответа: {answer}\n" if answer else None,
-                   f"Загадан: {noteseq.file_name}, {noteseq.id}, {noteseq}, {noteseq.prima_location_str}\n\n"]
+                   f"Загадан: {noteseq.file_name}, {noteseq.id}, {noteseq}, {noteseq.prima_location_str}\n"]
 
     def _get_reply(self)-> tuple[str, str]:
+        main_db = MainDB()
         noteseq = self.__current_noteseq
         
         if noteseq is None:
-            noteseq = self.__current_noteseq = self.engine.get_rnd_note_sequence(
+            noteseq = self.__current_noteseq = main_db.rnd(
                 lambda ns:
                     ns != self.__current_noteseq and \
                     ns.is_triad and not ns.is_vertical and \
@@ -451,11 +452,11 @@ class CadenceLevel(MelDictLevelBase):
         if not self.finished:
             answer = self.game_level.answers()
             if answer:
-                title = answer.btn(chord_pos = 0)
+                title = answer.btn(item_number = 1, chord_pos = 0)
                 yield self._create_button(title, 1)
-                title = answer.btn(chord_pos = 1)
+                title = answer.btn(item_number = 2, chord_pos = 1)
                 yield self._create_button(title, 2)
-                title = answer.btn(chord_pos = 2)
+                title = answer.btn(item_number = 3, chord_pos = 2)
                 yield self._create_button(title, 3)
 
     def __format_what(self, noteseq: MusicNoteSequence) -> tuple[str, str]:
@@ -487,7 +488,7 @@ class CadenceLevel(MelDictLevelBase):
             else ["\n#DEBUG\n",
                   f"Ответ: {answer}\n" if answer \
                     else (f"{i + 1}. {ns.file_name}, {ns.id}, {ns}, {ns.name}\n" for i, ns in enumerate(cadence)),
-                  f"Загадан: {guessed_index + 1}. {noteseq.file_name}, {noteseq.id}, {noteseq}, {noteseq.name}\n\n"]
+                  f"Загадан: {guessed_index + 1}. {noteseq.file_name}, {noteseq.id}, {noteseq}, {noteseq.name}\n"]
 
     def reset(self):
         super().reset()
@@ -500,16 +501,17 @@ class CadenceLevel(MelDictLevelBase):
 
         if cadence is None:
             maj = bool(rnd.getrandbits(1))
+            main_db = MainDB()
 
-            tns = self.engine.get_rnd_note_sequence(
+            tns = main_db.rnd(
                 lambda ns: ns.is_tonic and ns.is_tonality_maj == maj and ns.is_vertical)
             if tns is None: raise NoReplyError(f"Не удалось выбрать тонику: {'maj' if maj else 'min'}, arp")
 
-            sdns = self.engine.get_rnd_note_sequence(
+            sdns = main_db.rnd(
                 lambda ns: ns.is_subdominant and ns.is_tonality_maj == maj and ns.is_vertical)
             if sdns is None: raise NoReplyError(f"Не удалось найти субдоминанту: {'maj' if maj else 'min'}, arp")
 
-            dns = self.engine.get_rnd_note_sequence(
+            dns = main_db.rnd(
                 lambda ns: ns.is_dominant and ns.is_tonality_maj == maj and ns.is_vertical)
             if dns is None: raise NoReplyError(f"Не удалось найти доминанту: {'maj' if maj else 'min'}, arp")
 
@@ -601,11 +603,11 @@ class MissedNoteLevel(MelDictLevelBase):
         if not self.finished:
             answer = self.game_level.answers()
             if answer:
-                title = answer.btn(note_pos = 0)
+                title = answer.btn(item_number = 1, note_pos = 0)
                 yield self._create_button(title, 1)
-                title = answer.btn(note_pos = 1)
+                title = answer.btn(item_number = 2, note_pos = 1)
                 yield self._create_button(title, 2)
-                title = answer.btn(note_pos = 2)
+                title = answer.btn(item_number = 3, note_pos = 2)
                 yield self._create_button(title, 3)
 
     def __format_what(self, chord: MusicNoteSequence, interval: MusicNoteSequence) -> tuple[str, str]:
@@ -636,22 +638,23 @@ class MissedNoteLevel(MelDictLevelBase):
         return None if not Config().debug.enabled \
             else ["\n#DEBUG\n",
                   f"Ответ: {answer}\n" if answer else None,
-                  f"Аккорд: {chord.file_name}, {chord.id}, {'maj' if chord.is_chord_maj else 'min'}, {chord}\n\n",
-                  f"Интервал: {chord.file_name}, {interval.id}, {interval.base_chord}, {interval}, пропуск: {interval.missed_note + 1}\n\n"]
+                  f"Аккорд: {chord.file_name}, {chord.id}, {'maj' if chord.is_chord_maj else 'min'}, {chord}\n",
+                  f"Интервал: {chord.file_name}, {interval.id}, {interval.base_chord}, {interval}, пропуск: {interval.missed_note + 1}\n"]
 
     def _get_reply(self):
+        main_db = MainDB()
         interval = self.__interval
         chord = self.__chord
 
         if interval is None:
-            interval = self.engine.get_rnd_note_sequence(
+            interval = main_db.rnd(
                 lambda ns:
                     ns.is_interval and ns.is_ascending and not ns.is_vertical and len(ns.name) > 0)
 
             if interval is None:
                 raise NoReplyError(f"Не удалось выбрать интервал")
 
-            chord = self.engine.get_rnd_note_sequence(
+            chord = main_db.rnd(
                 lambda ns:
                     ns.is_triad and not ns.is_vertical and interval.base_chord == ns.id)
 

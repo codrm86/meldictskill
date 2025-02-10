@@ -3,7 +3,7 @@ import json
 import os
 import logging
 from myconstants import *
-from singleton import SingletonMeta
+from singleton import BaseModelSingletonMeta
 from filewatcher import *
 
 # Pydantic модели конфигов
@@ -19,12 +19,13 @@ class NetworkConfig(BaseModel):
     ssl: SSLConfig = Field(default_factory=SSLConfig, description="Настройки SSL")
 
 class DataConfig(BaseModel):
-    upload_websounds: bool = Field(False, description="Флаг, указывающий на необходимость загрузки звуков в облачное хранилище навыка при запуске сервера")
-    websounds_folder: str = Field("sounds", description="Папка со звуковыми файлами")
-    websounds_csv: str = Field("websounds.csv", description="CSV-файл с облачными идентификаторами загруженных звуков")
-    main_csv: str = Field("main.csv", description="Основной CSV-файл с аккордами и интервалами")
-    tts_csv: str = Field("tts.csv", description="CSV-файл со словами в TTS-разметке")
-    voice_menu_file: str = Field("voice_menu.json", description="JSON-файл голосового меню")
+    upload_websounds: bool = Field(False, description="Флаг, указывающий на необходимость генерации и загрузки звуков в облачное хранилище навыка при запуске сервера")
+    websounds_folder: str = Field("data/sounds", description="Папка со звуковыми файлами")
+    websounds_db: str = Field("data/websounds.csv", description="CSV-файл с облачными идентификаторами загруженных звуков")
+    sound_font: str = Field("data/default_sound_font.sf2", description="Библиотека MIDI-сэмплов по умолчанию для синтеза звуков")
+    main_db: str = Field("data/main.csv", description="Основной CSV-файл с аккордами и интервалами")
+    tts_db: str = Field("data/tts.csv", description="CSV-файл со словами в TTS-разметке")
+    voice_menu: str = Field("voice_menu.json", description="JSON-файл голосового меню")
 
 class SkillConfig(BaseModel):
     id: str = Field("", description="Идентификатор навыка")
@@ -33,7 +34,7 @@ class SkillConfig(BaseModel):
 class DebugConfig(BaseModel):
     enabled: bool = Field(False, description="Включить или отключить режим отладки")
 
-class Config(BaseModel, metaclass=SingletonMeta):
+class Config(BaseModel, metaclass=BaseModelSingletonMeta):
     """Основной класс конфигурации."""
     network: NetworkConfig = Field(default_factory=NetworkConfig, description="Настройки сети")
     data: DataConfig = Field(default_factory=DataConfig, description="Настройки данных")
@@ -54,7 +55,7 @@ class Config(BaseModel, metaclass=SingletonMeta):
             logging.info("Конфигурация загружена")
 
             return config
-        except Exception:
-            logging.error("Конфигурация не загружена")
-            raise
+        except Exception as e:
+            logging.error("Конфигурация не загружена", exc_info=e)
+            raise e
 

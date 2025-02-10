@@ -123,24 +123,16 @@ class MusicNoteSequence(Sequence):
         return len(self.__notes)
     
     def __str__(self):
-        return "".join(str(note) for note in self.__notes)
+        return " ".join(str(note) for note in self.__notes)
 
     @staticmethod
     def get_file_name(vertical: bool, notes: Iterable[MusicNote]) -> str:
-        suffix = ""
         file_name = ""
-        count = 0
 
         for i, n in enumerate(notes):
             file_name += f"{'_' if i > 0 else ''}{n.note}{'s' if n.diez else ''}{n.octave}"
-            count += 1
 
-        if count > 1:
-            if vertical: suffix = "_vert"
-            elif count == 2: suffix = "_mel"
-            elif count > 2: suffix = "_arp"
-
-        return file_name + suffix
+        return file_name + ("_ver" if vertical else "")
 
     @staticmethod
     def prima_location_str_to_int(prima_location: str) -> int:
@@ -159,19 +151,17 @@ class MusicNoteSequence(Sequence):
             case MusicNoteSequence.PRIMALOC_MIDDLE: return "В середине"
             case MusicNoteSequence.PRIMALOC_TOP: return "Наверху"
         return ""
-    
+
     @staticmethod
     def inversion_str_to_int(inversion: str) -> int:
-        invrs = MusicNoteSequence.INVERSION_UNKNOWN
+        if isinstance(inversion, str) and len(inversion) > 0:
+            match inversion[0].lower():
+                case "о": return MusicNoteSequence.INVERSION_MAIN
+                case "п": return MusicNoteSequence.INVERSION_FIRST
+                case "в": return MusicNoteSequence.INVERSION_SECOND
 
-        if inversion and len(inversion) > 0:
-            s = inversion[0].lower()
-            if s == "о": invrs = MusicNoteSequence.INVERSION_MAIN
-            elif s == "п": invrs = MusicNoteSequence.INVERSION_FIRST
-            elif s == "в": invrs = MusicNoteSequence.INVERSION_SECOND
+        return MusicNoteSequence.INVERSION_UNKNOWN
 
-        return invrs
-    
     @staticmethod
     def inversion_int_to_str(inversion: int) -> str:
         match inversion:
@@ -184,7 +174,7 @@ class MusicNoteSequence(Sequence):
     def __parse_chord_str(chord_str: str) -> tuple[bool, bool, bool]:
         is_tonic = is_dominant = is_subdominant = False
 
-        if chord_str and len(chord_str) > 0:
+        if isinstance(chord_str, str) and len(chord_str) > 0:
             s = chord_str[0].lower()
             is_tonic = s == "т" or s == "t"
             is_dominant = s == "д" or s == "d"
@@ -200,14 +190,11 @@ class MusicNoteSequence(Sequence):
         prev_note = None
 
         for i, note in enumerate(notes):
-            if isinstance(note, str):
-                if len(note) == 0: # note is str
-                    missed = i
-                    continue
+            if isinstance(note, str) and len(note) > 0: # note is str
                 note = MusicNote(note)
                 notes_list.append(note)
-            elif isinstance(note, MusicNote):
-                notes_list.append(note) # note is MusicNote
+            elif isinstance(note, MusicNote): # note is MusicNote
+                notes_list.append(note)
             else:
                 missed = i
                 continue

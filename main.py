@@ -1,131 +1,128 @@
-from aiohttp import web
-from types import SimpleNamespace as dynamic
-from aliceio.webhook.aiohttp_server import OneSkillAiohttpRequestHandler, setup_application
-from aliceio.types import FSInputFile
-from aliceio import Skill
-from myconstants import *
-from filewatcher import *
-from config import Config
-from watchdog.observers.api import BaseObserver
-from voicemenu import VoiceMenu
+import sys
+import logging.config
+import logging.handlers
 import os
-import pandas as pd
-import asyncio
 import ssl
 import logging
 import meldicthandlers as md
+import chordgen
+from aiohttp import web
+from aliceio.webhook.aiohttp_server import OneSkillAiohttpRequestHandler, setup_application
+from aliceio import Skill
 from myconstants import *
+from filewatcher import start_file_watcher
+from config import Config
+from watchdog.observers.api import BaseObserver
+from voicemenu import VoiceMenu
+from maindb import MainDB
+
 
 def configure_logger() -> logging.Logger:
     # Создаем объект логгера
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    # Создаем обработчик для записи лога в файл
-    file_handler = logging.FileHandler("meldict_skill.log", encoding=UTF8)
-    file_handler.setLevel(logging.INFO)
-
     # Форматирование логов
     formatter = logging.Formatter(
         fmt="[%(asctime)s] %(levelname)s: %(message)s",
         datefmt="%d.%m.%Y %H:%M:%S")
-    file_handler.setFormatter(formatter)
 
-    # Добавляем обработчик к логгеру
+    # Создаем обработчик для записи лога в файл
+    os.makedirs("logs", exist_ok=True)
+    file_handler = logging.handlers.RotatingFileHandler("logs/skill.log", maxBytes=1024 * 1024, backupCount=5, encoding=UTF8)
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
+
+    # Создаем обработчик для записи лога в консоль
+    consoleHandler = logging.StreamHandler(sys.stdout)
+    consoleHandler.setFormatter(formatter)
+    logger.addHandler(consoleHandler)
+
     return logger
 
 
-async def upload_websounds(skill: Skill):
+def generate_sounds():
     config = Config()
 
-    if not config.data.upload_websounds:
-        # logger.info(f"Пропуск удаления и загрузки звуков в навык.")
-        return
-
+    # генерируем отсутствующие звуки
+    os.makedirs(config.data.websounds_folder, exist_ok=True)
     count = 0
 
-    # удаляем все ранее загруженные звуки
-    logging.info("Получение списка ранее загруженных в навык звуков и их удаление")
-    pre_sounds = await skill.get_sounds()
-    for web_sound in pre_sounds.sounds:
+    for noteseq in MainDB():
         try:
-            await skill.delete_sound(web_sound.id)
-            count += 1
-            logging.info(f"Звук удалён {web_sound.id}")
+            logging.info(f"Генерация звука для {noteseq}")
+            if chordgen.generate_audio(noteseq, replace_existing=False):
+                count += 1
+                logging.info(f"Звук для {noteseq} сгенерирован")
         except Exception as e:
-            logging.error(f"Ошибка удаления звука {web_sound.id}.", exc_info=e)
+            logging.error(f"Ошибка во время генерации звука для {noteseq}", exc_info=e)
             continue
 
-    logging.info(f"Всего звуков удалено: {count}")
+    if count > 0:
+        logging.info(f"Всего звуков сгенерировано: {count}")
 
-    websounds = pd.DataFrame(columns=["file_name", "cloud_id"])
-    count = 0
-
-    # загружаем все звуки из папки sounds
-    logging.info(f"Загрузка звуков в облачное хранилище навыка")
-    websounds_folder = config.data.websounds_folder
-    for f in os.listdir(websounds_folder):
-        try:
-            sound_file = os.path.join(websounds_folder, f)
-            logging.info(f"Загрузка звука {sound_file}")
-
-            fsfile = FSInputFile(sound_file)
-            result = await skill.upload_sound(fsfile)
-            count += 1
-            websounds.loc[len(websounds)] = [f.split(".")[0], result.sound.id]
-            logging.info(f"Звук загружен {result}")
-        except Exception as e:
-            logging.warning(f"Ошибка загрузки звука {f}.", exc_info=e)
-            continue
-
-    logging.info(f"Всего звуков загружено: {count}")
-
-    websounds_csv = config.data.websounds_csv
-    logging.info(f"Сохранение загруженных звуков в {websounds_csv}")
-    websounds.to_csv(websounds_csv, sep=SEP, encoding=UTF8, index=False)
-    logging.info(f"Файл {websounds_csv} записан")
 
 def main() -> None:
     cfg_watcher: BaseObserver = None
     vm_watcher: BaseObserver = None
+    main_watcher: BaseObserver = None
 
     try:
+        # Настройка логгера
         configure_logger()
-        logging.info("*** Запуск навыка ***")
+        
+        logging.info("*** Запуск сервера Музыкального Диктанта ***")
 
+        # Загрузка конфига (должна выполняться следующей после логгера)
         config = Config.load(CONFIG_FILE)
         cfg_watcher = start_file_watcher(CONFIG_FILE, Config.load)
 
-        VoiceMenu.load(config.data.voice_menu_file)
-        vm_watcher = start_file_watcher(config.data.voice_menu_file, VoiceMenu.load)
+        # Загрузка голосового меню
+        VoiceMenu.load(config.data.voice_menu)
+        vm_watcher = start_file_watcher(config.data.voice_menu, VoiceMenu.load)
 
+        # Загрузка базы данных трезвучий
+        MainDB.load()
+        main_watcher = start_file_watcher(config.data.main_db, lambda _: MainDB.load())
+
+        # Генерация звуков
+        if config.data.upload_websounds:
+            generate_sounds()
+
+        # Создание экземпляра навыка Алисы 
         logging.info(f"Skill-ID: {config.skill.id}, OAuth-Token: {config.skill.oauth_token}")
-
         skill = Skill(skill_id=config.skill.id, oauth_token=config.skill.oauth_token)
-        asyncio.run(upload_websounds(skill))
 
+        logging.info(f"Запуск HTTP-сервера: http{'s' if config.network.ssl.enabled else ''}://{config.network.ip}:{config.network.port}/{config.network.path}")
+
+        # Настраиваем SSL на сервере
         ssl_context = None
         if config.network.ssl.enabled:
             ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
             ssl_context.load_cert_chain(certfile=config.network.ssl.certfile, keyfile=config.network.ssl.keyfile)
 
-        logging.info(f"Запуск HTTP-сервера: IP {config.network.ip}:{config.network.port}, URL \"{config.network.path}\"")
         app = web.Application()
         requests_handler = OneSkillAiohttpRequestHandler(dispatcher=md.dispatcher, skill=skill)
         requests_handler.register(app, path=f"/{config.network.path}")
         setup_application(app, md.dispatcher, skill=skill)
+
+        # запускаем прослушивание порта по указанному ip
         web.run_app(app, host=config.network.ip, port=config.network.port, ssl_context=ssl_context)
     except Exception as e:
         logging.fatal("Необработанное исключение", exc_info=e)
+        raise e
     finally:
         if cfg_watcher:
             cfg_watcher.stop()
             cfg_watcher.join()
+        if main_watcher:
+            main_watcher.stop()
+            main_watcher.join()
         if vm_watcher:
             vm_watcher.stop()
             vm_watcher.join()
-        logging.info("*** Остановка навыка ***")
+        logging.info("*** Остановка сервера ***")
 
 if __name__ == "__main__":
     main()

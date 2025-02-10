@@ -1,8 +1,9 @@
-from typing import Optional, Any, TypeVar, Generic, ClassVar
+from typing import Optional, TypeVar, Generic, ClassVar
 from pydantic import RootModel, BaseModel, Field
 from collections.abc import Callable
 from myconstants import *
-from singleton import SingletonMeta
+from singleton import BaseModelSingletonMeta
+from extended_formatter import ExtendedFormatter
 import random
 import logging
 import json
@@ -21,7 +22,7 @@ class RandomCollection(RootModel[list[T]], Generic[T]):
 
     def __getitem__(self, index):
         return self.root[index] if isinstance(self.root, list) else None
-    
+
     def __call__(self):
         return self.rnd()
 
@@ -47,7 +48,8 @@ class TextTTS(BaseModel):
 
 
 class Format(TextTTS):
-    arguments: Optional[dict[str, dict[str, TextTTS]]]  = Field(default_factory=lambda: dict())
+    __formatter: ClassVar[ExtendedFormatter] = ExtendedFormatter()
+    arguments: Optional[dict[str, dict[str, TextTTS]]] = Field(default_factory=lambda: dict())
 
     def _format(self, source: str, tts: bool, **kwargs):
         if not isinstance(source, str) or len(source) == 0:
@@ -69,7 +71,7 @@ class Format(TextTTS):
 
             kwargs[key] = arg_value.tts if tts else arg_value.text
 
-        return source.format(**kwargs) if len(kwargs) else source
+        return Format.__formatter.format(source, **kwargs) if len(kwargs) > 0 else source
 
     def format(self, **kwargs) -> tuple[str, str]:
         text = self._format(self.text, False, **kwargs)
@@ -85,7 +87,6 @@ class FormatButton(Format):
 
     def btn(self, **kwargs) -> str:
         text = self._format(self.button, False, **kwargs)
-        if text and len(text) > 0 and text[0].isalpha() and text[0].islower(): text = text[0].capitalize() + text[1:]
         return text
 
 
@@ -185,7 +186,7 @@ class GameLevels(BaseModel):
     repeat_buttons: TextTTSRndCollection = Field(default_factory=lambda: TextTTS(text="Повторить"))
 
 
-class VoiceMenu(BaseModel, metaclass=SingletonMeta):
+class VoiceMenu(BaseModel, metaclass=BaseModelSingletonMeta):
     root: RootLevel = Field()
     main_menu: MenuLevel = Field()
     levels: GameLevels = Field()
@@ -193,6 +194,8 @@ class VoiceMenu(BaseModel, metaclass=SingletonMeta):
     @classmethod
     def load(cls, file_name: str):
         """Загружает и валидирует голосовое меню из JSON-файла."""
+        assert file_name
+
         try:
             logging.info("Загрузка голосового меню")
             json_data = None
@@ -200,10 +203,8 @@ class VoiceMenu(BaseModel, metaclass=SingletonMeta):
             with open(file_name, "r", encoding=UTF8) as file:
                 json_data = json.load(file)
 
-            config = cls(**json_data)
+            cls(**json_data)
             logging.info("Голосовое меню загружено")
-
-            return config
         except Exception as e:
             logging.error("Ошибка загрузки голосового меню", exc_info=e)
-            raise
+            raise e

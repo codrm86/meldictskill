@@ -38,18 +38,6 @@ class MelDictEngineBase(ABC):
         pass
 
     @abstractmethod
-    def iter_note_sequences(self, predicate: Callable[[MusicNoteSequence], bool] = None) -> Iterable[MusicNoteSequence]:
-        pass
-
-    @abstractmethod
-    def shuffle_note_sequences(self, predicate: Callable[[MusicNoteSequence], bool] = None) -> Iterable[MusicNoteSequence]:
-        pass
-
-    @abstractmethod
-    def get_rnd_note_sequence(self, predicate: Callable[[MusicNoteSequence], bool] = None) -> MusicNoteSequence:
-        pass
-
-    @abstractmethod
     def get_audio_tag(self, nsf: str | MusicNoteSequence) -> str:
         pass
 
@@ -97,7 +85,7 @@ class MelDictEngineBase(ABC):
                 value = self.get_audio_tag(value.file_name)
                 tag = True
             elif isinstance(value, Iterable):
-                value, tag = self.__format_tts(new_line, prev_tag, "", *value)
+                value, tag = self.__format_tts(new_line, prev_tag, *value)
             else:
                 value = str(value)
 

@@ -3,15 +3,13 @@ import logging
 import time
 import traceback as tb
 from config import Config
-from types import SimpleNamespace as dynamic
-from aliceio import Dispatcher, Skill, Router, F
-from aliceio.exceptions import *
+from aliceio import Dispatcher, F, Skill
 from aliceio.fsm.context import FSMContext
-from aliceio.fsm.state import State, StatesGroup
-from aliceio.types import AliceResponse, Message, Response, TextButton
-from meldictenginealice import *
-from myfilters import *
+from aliceio.types import AliceResponse, Response, ErrorEvent, Message, TextButton
+from meldictenginealice import MelDictEngineAlice
+from voicemenu import VoiceMenu
 from myconstants import *
+from yandex_websounds import YandexWebSounds
 
 dispatcher = Dispatcher()
 rlock = threading.RLock()
@@ -25,30 +23,21 @@ def format_error(text: str, e: Exception) -> str:
 
     return text
 
-def create_response(text: str, tts: str, engine: MelDictEngineAlice, end_session: bool = False, buttons: list[TextButton] = None) -> AliceResponse:
-    if engine is None:
-        return AliceResponse(response=Response(text = text, tts = tts, end_session = end_session))
-
-    buttons = engine.get_buttons()
-    if buttons: buttons = buttons if isinstance(buttons, list) else list(buttons)
-
-    return AliceResponse(
-        response=Response(text = text,
-                          tts = engine.format_tts("<speaker effect=\"hamster\">" if engine.hamster else None, tts, sep=""),
-                          end_session = end_session,
-                          buttons = buttons))
+def create_response(text: str, tts: str, engine: MelDictEngineAlice, end_session: bool = False) -> AliceResponse:
+    return engine.create_response(text, tts, end_session) if engine \
+        else AliceResponse(response=Response(text=text, tts=tts, end_session=end_session))
 
 async def get_engine(skill_id: str, session_id: str, state: FSMContext, force_create: bool = False) -> MelDictEngineAlice:
         engine = None
 
         if force_create:
-            config = Config()
             engine = MelDictEngineAlice(skill_id)
-            await engine.load_data(config.data.main_csv, config.data.websounds_csv, config.data.tts_csv)
-            session_data = await state.update_data({ session_id: (engine, time.time()) })
+            engine.mode = GameMode.INIT
 
+            session_data = await state.update_data({ session_id: (engine, time.time()) })
             now = time.time()
             remove = list()
+
             for key, value in session_data.items():
                 if key != session_id and now - value[1] >= 600: # последняя активность 10 минут назад и более
                   remove.append(key)
@@ -65,6 +54,29 @@ async def get_engine(skill_id: str, session_id: str, state: FSMContext, force_cr
 
         return engine
 
+
+@dispatcher.error()
+async def error_handler(event: ErrorEvent):
+    logging.error(event.update, exc_info=event.exception)
+    text, tts = VoiceMenu().root.something_went_wrong()
+    text = format_error(text, event.exception)
+
+    return create_response(text, tts, None)
+
+
+@dispatcher.startup()
+async def on_startup(skill: Skill, dispatcher: Dispatcher) -> None:
+    try:
+        if Config().data.upload_websounds == True:
+            status = await skill.status()
+            logging.info(f"Квоты Алисы: {status.images.quota.used}/{status.images.quota.total*100:.0f} изображений, {status.sounds.quota.used}/{status.sounds.quota.total*100:.0f} звуков")
+            await YandexWebSounds.upload_websounds(skill)
+
+        # загрузка базы облачных идентификаторов звуков
+        YandexWebSounds.load()
+    except Exception as e:
+        logging.error("Ошибка во время запуска навыка", exc_info=e)
+
 @dispatcher.message(F.session.new)
 async def start_session(message: Message, state: FSMContext) -> AliceResponse:
     text = tts = ""
@@ -74,7 +86,7 @@ async def start_session(message: Message, state: FSMContext) -> AliceResponse:
         engine = await get_engine(message.skill.id, message.session.session_id, state, True)
         text, tts = engine.get_reply()
     except Exception as e:
-        logging.error(message.command, exc_info=e)
+        logging.error(message, exc_info=e)
         text, tts = VoiceMenu().root.something_went_wrong()
         text = format_error(text, e)
 
@@ -94,7 +106,7 @@ async def menu_message_handler(message: Message, state: FSMContext, engine: MelD
         engine.mode = GameMode.MENU
         text, tts = engine.get_reply()
     except Exception as e:
-        logging.error(message.command, exc_info=e)
+        logging.error(message, exc_info=e)
         text, tts = VoiceMenu().root.something_went_wrong()
         text = format_error(text, e)
 
@@ -113,7 +125,7 @@ async def mode_message_handler(message: Message, state: FSMContext, mode: str) -
 
         text, tts = engine.process_user_reply(message, mode)
     except Exception as e:
-        logging.error(message.command, exc_info=e)
+        logging.error(message, exc_info=e)
         text, tts = VoiceMenu().root.something_went_wrong()
         text = format_error(text, e)
 
@@ -132,7 +144,7 @@ async def back_message_handler(message: Message, state: FSMContext, engine: MelD
 
         text, tts = engine.process_back_action()
     except Exception as e:
-        logging.error(message.command, exc_info=e)
+        logging.error(message, exc_info=e)
         text, tts = VoiceMenu().root.something_went_wrong()
         text = format_error(text, e)
 
@@ -151,7 +163,7 @@ async def stats_message_handler(message: Message, state: FSMContext) -> AliceRes
 
         text, tts = engine.get_stats_reply()
     except Exception as e:
-        logging.error(message.command, exc_info=e)
+        logging.error(message, exc_info=e)
         text, tts = VoiceMenu().root.something_went_wrong()
         text = format_error(text, e)
 
@@ -170,7 +182,7 @@ async def rules_message_handler(message: Message, state: FSMContext) -> AliceRes
 
         text, tts = engine.get_rules_reply()
     except Exception as e:
-        logging.error(message.command, exc_info=e)
+        logging.error(message, exc_info=e)
         text, tts = VoiceMenu().root.something_went_wrong()
         text = format_error(text, e)
 
@@ -189,7 +201,7 @@ async def finish_message_handler(message: Message, state: FSMContext) -> AliceRe
 
         text, tts = VoiceMenu().root.byebye()
     except Exception as e:
-        logging.error(message.command, exc_info=e)
+        logging.error(message, exc_info=e)
         text, tts = VoiceMenu().root.something_went_wrong()
         text = format_error(text, e)
 
@@ -210,7 +222,7 @@ async def hamster_handler(message: Message, state: FSMContext) -> AliceResponse:
         engine.hamster = slots.get("not") is None if slots else True
         text, tts = VoiceMenu().root.hamster_on() if engine.hamster else VoiceMenu().root.hamster_off()
     except Exception as e:
-        logging.error(message.command, exc_info=e)
+        logging.error(message, exc_info=e)
         text, tts = VoiceMenu().root.something_went_wrong()
         text = format_error(text, e)
 
@@ -231,7 +243,7 @@ async def message_handler(message: Message, state: FSMContext) -> AliceResponse:
         text, tts = engine.process_user_reply(message) if not repeat \
             else engine.get_reply()
     except Exception as e:
-        logging.error(message.command, exc_info=e)
+        logging.error(message, exc_info=e)
         text, tts = VoiceMenu().root.something_went_wrong()
         text = format_error(text, e)
 
@@ -239,7 +251,7 @@ async def message_handler(message: Message, state: FSMContext) -> AliceResponse:
 
 
 @dispatcher.button_pressed()
-async def button_pressed_handler(button: TextButton, state: FSMContext):
+async def button_pressed_handler(button: TextButton, state: FSMContext) -> AliceResponse:
     text = tts = ""
     engine = None
 
@@ -251,7 +263,7 @@ async def button_pressed_handler(button: TextButton, state: FSMContext):
 
         text, tts = engine.process_button_pressed(button)
     except Exception as e:
-        logging.error(button.payload, exc_info=e)
+        logging.error(button, exc_info=e)
         text, tts = VoiceMenu().root.something_went_wrong()
         text = format_error(text, e)
 

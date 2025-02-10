@@ -1,15 +1,18 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 import threading
 
 # Потокобезопасный синглтон
-class SingletonMeta(type(BaseModel)):
+class SingletonMeta(type):
     _instance = None
-    _lock = threading.Lock()
+    _rlock = threading.RLock()
 
-    def __call__(cls, *args, **kwargs):
+    def __call__(self, *args, new: bool = False, **kwargs):
         """Возвращает существующий экземпляр или создаёт новый."""
-        with cls._lock:
-            if cls._instance is None or args or kwargs:
+        with self._rlock:
+            if self._instance is None or new or args or kwargs:
                 # Если экземпляр ещё не создан, создаём с использованием аргументов
-                cls._instance = super().__call__(*args, **kwargs)
-            return cls._instance
+                self._instance = super().__call__(*args, **kwargs)
+            return self._instance
+
+class BaseModelSingletonMeta(type(BaseModel), SingletonMeta):
+    pass

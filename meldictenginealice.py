@@ -1,24 +1,18 @@
-import os
-import logging
-import random as rnd
-from typing import Callable
-import pandas as pd
-from aliceio.types import Message, TextButton
-
-from musicnotesequence import *
-from musicnote import *
-from meldictenginebase import *
-from meldictlevels import *
-from myfilters import *
+from typing import Iterable
+from aliceio.types import AliceResponse, Response, Message, TextButton
+from musicnotesequence import MusicNoteSequence
+from musicnote import MusicNote
+from meldictenginebase import MelDictEngineBase
+from meldictlevels import MelDictLevelBase, DemoLevel, MissedNoteLevel, PrimaLocationLevel, CadenceLevel, ExamLevel
+from myfilters import CmdFilter
 from myconstants import *
+from maindb import MainDB
+from yandex_websounds import YandexWebSounds
+from voicemenu import VoiceMenu
 
 class MelDictEngineAlice(MelDictEngineBase):
     def __init__(self, skill_id):
         super().__init__(skill_id)
-        self.__main_db = list[MusicNoteSequence]()
-        self.__websounds = dict[str, str]()
-        self.__tts = dict()
-        self.__first_run = True
         self.__demo_level = DemoLevel(self)
         self.__missed_note_level = MissedNoteLevel(self)
         self.__cadence_level = CadenceLevel(self)
@@ -26,7 +20,6 @@ class MelDictEngineAlice(MelDictEngineBase):
         self.__exam = ExamLevel(self, self.__missed_note_level, self.__prima_loc_level, self.__cadence_level)
         self.__current_level = None
         self.__hamster = False
-        self.__used_noteseqs = set()
 
     @property
     def hamster(self): return self.__hamster
@@ -36,7 +29,7 @@ class MelDictEngineAlice(MelDictEngineBase):
     @MelDictEngineBase.mode.setter
     def mode(self, value: int):
         self._mode = max(GameMode.UNKNOWN, value)
-        self.__used_noteseqs.clear()
+        MainDB().clear_used()
 
         match self._mode:
             case GameMode.DEMO:
@@ -135,10 +128,11 @@ class MelDictEngineAlice(MelDictEngineBase):
     def get_reply(self) -> tuple[str, str]:
         self._assert_mode()
         level: MelDictLevelBase = None
+        main_db = MainDB()
 
         match self.mode:
             case GameMode.INIT:
-                noteseq = self.get_rnd_note_sequence(
+                noteseq = main_db.rnd(
                     lambda ns:
                         ns.is_vertical and (ns.is_chord_maj or ns.is_tonality_maj))
 
@@ -173,7 +167,7 @@ class MelDictEngineAlice(MelDictEngineBase):
             return text, tts
 
         text, tts = VoiceMenu().root.dont_understand()
-        return text, self.format_tts(tts)
+        return text, tts
 
     def process_user_reply(self, message: Message = None, mode_str: str = None) -> tuple[str, str]:
         self._assert_mode()
@@ -181,7 +175,7 @@ class MelDictEngineAlice(MelDictEngineBase):
         new_level_id = None
 
         match self.mode:
-            case GameMode.MENU:               
+            case GameMode.MENU:
                 if mode_str:
                     if CmdFilter.passed(mode_str, ("демо", "продемонстрир")):
                         new_mode = GameMode.DEMO
@@ -258,7 +252,7 @@ class MelDictEngineAlice(MelDictEngineBase):
 
         if level is None:
             text, tts = VoiceMenu().root.dont_understand()
-            return text, self.format_tts(tts)
+            return text, tts
 
         if new_level_id or new_mode: # уровень только что выбран
             level.reset()
@@ -281,89 +275,22 @@ class MelDictEngineAlice(MelDictEngineBase):
             self.mode = GameMode.MENU
             menu_text, menu_tts = self.get_reply()
 
-            text = self.format_text(text, "\n\n", complete_text, stat_text, menu_text, sep="\n")
+            text = self.format_text(text, complete_text, stat_text, menu_text, sep="\n\n")
             tts = self.format_tts(tts, complete_tts, stat_tts, menu_tts, sep=".")
         return text, tts
 
-
     def get_audio_tag(self, nsf: str | MusicNoteSequence) -> str:
-        cloud_id = self.__websounds.get(nsf.file_name if isinstance(nsf, MusicNoteSequence) else nsf)
+        cloud_id = YandexWebSounds().get_cloud_id(nsf)
         return f'<speaker audio="dialogs-upload/{self.skill_id}/{cloud_id}.opus">' if cloud_id else ""
 
-    def iter_note_sequences(self, predicate: Callable[[MusicNoteSequence], bool] = None) -> Iterable[MusicNoteSequence]:
-        for noteseq in self.__main_db:
-            if predicate is None or predicate(noteseq) == True:
-                yield noteseq
+    def get_hamster_tag(self) -> str:
+        return "<speaker effect=\"hamster\">" if self.hamster else None
 
-    def shuffle_note_sequences(self, predicate: Callable[[MusicNoteSequence], bool] = None) -> Iterable[MusicNoteSequence]:
-        dblen = len(self.__main_db)
-        if dblen == 0: return
+    def create_response(self, text: str, tts: str, end_session: bool = False):
+        buttons = None if end_session else list(self.get_buttons())
 
-        filtered = 0
-
-        for _ in range(2):
-            for i in rnd.sample(range(0, dblen), dblen):
-                noteseq = self.__main_db[i]
-                if predicate is None or predicate(noteseq) == True:
-                    if noteseq not in self.__used_noteseqs:
-                        self.__used_noteseqs.add(noteseq)
-                        filtered += 1
-                        yield noteseq
-
-            if filtered == 0:
-                if len(self.__used_noteseqs) == 0: break
-                self.__used_noteseqs.clear()
-
-    def get_rnd_note_sequence(self, predicate: Callable[[MusicNoteSequence], bool] = None) -> MusicNoteSequence:
-        for noteseq in self.shuffle_note_sequences(predicate):
-            return noteseq
-
-    async def load_data(self, main_csv: str, websounds_csv: str, tts_csv: str = None):
-        assert isinstance(main_csv, str) and main_csv != ""
-        assert isinstance(websounds_csv, str) and websounds_csv != ""
-
-        await self.__load_websounds(websounds_csv)
-        self.__load_tts(tts_csv)
-        self.__main_db = self.__load_main_db(main_csv)
-        self.mode = GameMode.INIT
-
-    async def __load_websounds(self, websounds_csv: str):
-        if not os.path.isfile(websounds_csv): return
-
-        csv = pd.read_csv(websounds_csv, sep=SEP, encoding=UTF8, index_col=False)
-        self.__websounds = pd.Series(csv.cloud_id.values, csv.file_name).to_dict()
-
-    def __load_tts(self, tts_csv: str):
-        try:
-            if not os.path.isfile(tts_csv):
-                return
-
-            df = pd.read_csv(tts_csv, sep=SEP, encoding=UTF8)
-            df.text = df.text.str.lower()
-            self.__tts = df.set_index("text").tts.to_dict()
-        except Exception as e:
-            logging.error(f"Ошибка загрузки файла TTS \"{tts_csv}\"", exc_info=e)
-            pass
-
-    def __load_main_db(self, main_csv: str) -> list[MusicNoteSequence]:
-        if not os.path.isfile(main_csv):
-            return
-
-        df = pd.read_csv(main_csv, sep=SEP, encoding=UTF8, index_col="name")
-        data = list()
-
-        for index, row in df.iterrows():
-            noteseq = MusicNoteSequence(row.vertical,
-                                        row.note_1, row.note_2, row.note_3,
-                                        id=index,
-                                        base_chord=row.base_chord,
-                                        chord_str=row.chord_type,
-                                        interval_str=row.interval,
-                                        tonality_maj=row.tonality_maj,
-                                        chord_maj=row.chord_maj,
-                                        prima_location=row.prima_location,
-                                        inversion=row.inversion)
-
-            noteseq.tts_name = self.__tts.get(noteseq.name.lower(), None)
-            data.append(noteseq)
-        return data
+        return AliceResponse(
+            response=Response(text=text,
+                              tts=self.format_tts(self.get_hamster_tag(), tts, sep=""),
+                              end_session=end_session,
+                              buttons=buttons))
