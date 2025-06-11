@@ -1,10 +1,11 @@
-from pydantic import BaseModel, Field
 import json
-import os
 import logging
-from myconstants import *
-from singleton import BaseModelSingletonMeta
-from filewatcher import *
+from typing import ClassVar
+from pydantic import BaseModel, Field
+from .myconstants import *
+from .singleton import BaseModelSingletonMeta
+from .filewatcher import *
+from .abspath import abs_path
 
 # Pydantic модели конфигов
 class SSLConfig(BaseModel):
@@ -32,30 +33,41 @@ class SkillConfig(BaseModel):
     oauth_token: str = Field("", description="OAuth токен для навыка")
 
 class DebugConfig(BaseModel):
-    enabled: bool = Field(False, description="Включить или отключить режим отладки")
+    enabled: bool = Field(False, description="Включить или отключить режим отладки уровней")
 
 class Config(BaseModel, metaclass=BaseModelSingletonMeta):
     """Основной класс конфигурации."""
-    network: NetworkConfig = Field(default_factory=NetworkConfig, description="Настройки сети")
-    data: DataConfig = Field(default_factory=DataConfig, description="Настройки данных")
-    skill: SkillConfig = Field(default_factory=SkillConfig, description="Информация о навыке Алисы")
-    debug: DebugConfig = Field(default_factory=DebugConfig, description="Настройки отладки")
+    def __init__(self, /, **data):
+        super().__init__(**data)
+        self.__file = None
+
+    network: NetworkConfig = Field(description="Настройки сети")
+    data: DataConfig = Field(description="Настройки данных")
+    skill: SkillConfig = Field(description="Информация о навыке Алисы")
+    debug: DebugConfig = Field(description="Настройки отладки")
+
+    @property
+    def file(self) -> str: return self.__file
 
     @classmethod
-    def load(cls, config_path: str):
+    def load_default(self):
+        return self.load(abs_path("config.json"))
+
+    @classmethod
+    def load(self, config_file: str):
         """Загружает и валидирует конфигурацию из JSON-файла."""
         try:
             logging.info("Загрузка конфигурации")
             config_data = None
 
-            with open(config_path, "r", encoding=UTF8) as file:
+            with open(config_file, "r", encoding=UTF8) as file:
                 config_data = json.load(file)
 
-            config = cls(**config_data)
+            instance = self(**config_data)
+            instance.__file = config_file
             logging.info("Конфигурация загружена")
 
-            return config
+            return instance
         except Exception as e:
             logging.error("Конфигурация не загружена", exc_info=e)
             raise e
-

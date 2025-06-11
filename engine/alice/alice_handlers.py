@@ -2,14 +2,14 @@ import threading
 import logging
 import time
 import traceback as tb
-from config import Config
 from aliceio import Dispatcher, F, Skill
 from aliceio.fsm.context import FSMContext
 from aliceio.types import AliceResponse, Response, ErrorEvent, Message, TextButton
-from meldictenginealice import MelDictEngineAlice
-from voicemenu import VoiceMenu
-from myconstants import *
-from yandex_websounds import YandexWebSounds
+from .alice_engine import AliceEngine
+from ...config import Config
+from ...voicemenu import VoiceMenu
+from .alice_websounds import AliceWebSounds
+from ...myconstants import *
 
 dispatcher = Dispatcher()
 rlock = threading.RLock()
@@ -23,15 +23,15 @@ def format_error(text: str, e: Exception) -> str:
 
     return text
 
-def create_response(text: str, tts: str, engine: MelDictEngineAlice, end_session: bool = False) -> AliceResponse:
+def create_response(text: str, tts: str, engine: AliceEngine, end_session: bool = False) -> AliceResponse:
     return engine.create_response(text, tts, end_session) if engine \
         else AliceResponse(response=Response(text=text, tts=tts, end_session=end_session))
 
-async def get_engine(skill_id: str, session_id: str, state: FSMContext, force_create: bool = False) -> MelDictEngineAlice:
+async def get_engine(skill_id: str, session_id: str, state: FSMContext, force_create: bool = False) -> AliceEngine:
         engine = None
 
         if force_create:
-            engine = MelDictEngineAlice(skill_id)
+            engine = AliceEngine(skill_id)
             engine.mode = GameMode.INIT
 
             session_data = await state.update_data({ session_id: (engine, time.time()) })
@@ -70,10 +70,10 @@ async def on_startup(skill: Skill, dispatcher: Dispatcher) -> None:
         if Config().data.upload_websounds == True:
             status = await skill.status()
             logging.info(f"Квоты Алисы: {status.images.quota.used}/{status.images.quota.total*100:.0f} изображений, {status.sounds.quota.used}/{status.sounds.quota.total*100:.0f} звуков")
-            await YandexWebSounds.upload_websounds(skill)
+            await AliceWebSounds.upload_websounds(skill)
 
         # загрузка базы облачных идентификаторов звуков
-        YandexWebSounds.load()
+        AliceWebSounds.load()
     except Exception as e:
         logging.error("Ошибка во время запуска навыка", exc_info=e)
 
@@ -94,7 +94,7 @@ async def start_session(message: Message, state: FSMContext) -> AliceResponse:
 
 
 @dispatcher.message(F.nlu.intents["menu_open"])
-async def menu_message_handler(message: Message, state: FSMContext, engine: MelDictEngineAlice = None) -> AliceResponse:
+async def menu_message_handler(message: Message, state: FSMContext, engine: AliceEngine = None) -> AliceResponse:
     text = tts = ""
     engine = None
 
@@ -133,7 +133,7 @@ async def mode_message_handler(message: Message, state: FSMContext, mode: str) -
 
 
 @dispatcher.message(F.nlu.intents["back"])
-async def back_message_handler(message: Message, state: FSMContext, engine: MelDictEngineAlice = None) -> AliceResponse:
+async def back_message_handler(message: Message, state: FSMContext, engine: AliceEngine = None) -> AliceResponse:
     text = tts = ""
     engine = None
 

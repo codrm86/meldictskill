@@ -1,12 +1,13 @@
-from typing import Optional, TypeVar, Generic, ClassVar
-from pydantic import RootModel, BaseModel, Field
-from collections.abc import Callable
-from myconstants import *
-from singleton import BaseModelSingletonMeta
-from extended_formatter import ExtendedFormatter
 import random
 import logging
 import json
+from typing import Optional, TypeVar, Generic, ClassVar
+from pydantic import RootModel, BaseModel, Field
+from collections.abc import Callable
+from .singleton import BaseModelSingletonMeta
+from .extended_formatter import ExtendedFormatter
+from .myconstants import *
+
 
 T = TypeVar('T')
 
@@ -160,12 +161,13 @@ class RootLevel(BaseModel):
     no_way_back: TextTTSRndCollection = Field()
     rights: TextTTSRndCollection = Field()
     wrongs: TextTTSRndCollection= Field()
+    back_buttons: TextTTSRndCollection = Field(default_factory=lambda: TextTTSRndCollection([TextTTS(text="Назад")]))
+    repeat_buttons: TextTTSRndCollection = Field(default_factory=lambda: TextTTSRndCollection([TextTTS(text="Повторить")]))
 
 
 class MenuLevel(Replies):
     train_menu: FormatButton = Field()
     rules: FormatButton = Field()
-    back: FormatButton = Field(default_factory=lambda: FormatButton(text="Назад", button="Назад"))
 
 
 class GameLevel(Replies):
@@ -183,16 +185,22 @@ class GameLevels(BaseModel):
     prima_location: GameLevel = Field()
     cadence: GameLevel = Field()
     exam: GameLevel = Field()
-    repeat_buttons: TextTTSRndCollection = Field(default_factory=lambda: TextTTS(text="Повторить"))
 
 
 class VoiceMenu(BaseModel, metaclass=BaseModelSingletonMeta):
+    def __init__(self, /, **data):
+        super().__init__(**data)
+        self.__file = None
+    
     root: RootLevel = Field()
     main_menu: MenuLevel = Field()
     levels: GameLevels = Field()
 
+    @property
+    def file(self) -> str: return self.__file
+
     @classmethod
-    def load(cls, file_name: str):
+    def load(self, file_name: str):
         """Загружает и валидирует голосовое меню из JSON-файла."""
         assert file_name
 
@@ -203,8 +211,11 @@ class VoiceMenu(BaseModel, metaclass=BaseModelSingletonMeta):
             with open(file_name, "r", encoding=UTF8) as file:
                 json_data = json.load(file)
 
-            cls(**json_data)
+            instance = self(**json_data)
+            instance.__file = file_name
             logging.info("Голосовое меню загружено")
+
+            return instance
         except Exception as e:
             logging.error("Ошибка загрузки голосового меню", exc_info=e)
             raise e

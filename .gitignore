@@ -1,9 +1,9 @@
 /.venv
 /.vscode
 /.vs
-/__pycache__
 /data/sounds
 /logs
+__pycache__
 websounds*.csv
 *.wav
 *.opus

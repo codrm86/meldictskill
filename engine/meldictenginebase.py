@@ -1,14 +1,12 @@
-from typing import Callable
-from aliceio.types import Message, TextButton
-from musicnotesequence import *
-from musicnote import *
-from myfilters import *
-from myconstants import *
 from abc import ABC, abstractmethod
+from typing import Iterable
+from aliceio.types import Message, TextButton
+from .musicnotesequence import MusicNoteSequence
+from ..myconstants import *
 
 class MelDictEngineBase(ABC):
     def __init__(self, skill_id: str):
-        assert skill_id and skill_id != ""
+        assert isinstance(skill_id, str) and len(skill_id) > 0
         self.__skill_id = skill_id
         self._mode = GameMode.UNKNOWN
 
@@ -19,11 +17,16 @@ class MelDictEngineBase(ABC):
     def mode(self) -> int: return self._mode
 
     @mode.setter
+    @abstractmethod
     def mode(self, value: int):
-        self._mode = max(GameMode.UNKNOWN, value)
+        pass
 
     def _assert_mode(self):
         assert self.mode >= GameMode.INIT, "Режим не задан" # should not be unknown
+
+    @abstractmethod
+    def get_rules_reply(self) -> tuple[str, str]:
+        pass
 
     @abstractmethod
     def get_stats_reply(self) -> tuple[str, str]:
@@ -31,6 +34,10 @@ class MelDictEngineBase(ABC):
 
     @abstractmethod
     def get_reply(self) -> tuple[str, str]:
+        pass
+
+    @abstractmethod
+    def process_back_action(self) -> tuple[str, str]:
         pass
 
     @abstractmethod

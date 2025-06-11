@@ -2,18 +2,22 @@ import os
 import logging
 import pandas as pd
 import random as rnd
-from typing import Callable
-from myconstants import *
-from musicnotesequence import *
-from singleton import *
-from config import Config
-from singleton import SingletonMeta
+from typing import Callable, Iterable
+from .musicnotesequence import MusicNoteSequence
+from ..config import Config
+from ..singleton import SingletonMeta
+from ..myconstants import *
+from ..abspath import abs_path
 
 class MainDB(metaclass=SingletonMeta):
     def __init__(self):
         self.__data = list[MusicNoteSequence]()
         self.__tts = dict[str, str]()
         self.__used_noteseqs = set[MusicNoteSequence]()
+        self.__file = None
+
+    @property
+    def file(self) -> str: return self.__file
 
     def __iter__(self):
         return iter(self.__data)
@@ -59,32 +63,37 @@ class MainDB(metaclass=SingletonMeta):
     @classmethod
     def load(self):
         config = Config()
-        maindb = self()
-        maindb.__load_tts(config)
-        maindb.__load_main_db(config)
+        instance = self()
+        instance.__load_tts(config)
+        instance.__load_main_db(config)
+        return instance
 
     def __load_tts(self, config: Config):
+        tts_db = abs_path(config.data.tts_db)
+
         try:
-            logging.info("Загрузка файла TTS")
-            if not os.path.isfile(config.data.tts_db):
+            if not os.path.isfile(tts_db):
                 return
 
-            df = pd.read_csv(config.data.tts_db, sep=SEP, encoding=UTF8, index_col="text")
+            logging.info("Загрузка файла TTS")
+            df = pd.read_csv(tts_db, sep=SEP, encoding=UTF8, index_col="text")
             df.index = df.index.str.lower()
             self.__tts = df.tts.dropna().to_dict()
 
             logging.info(f"Файл TTS загружен")
         except Exception as e:
-            logging.error(f"Ошибка загрузки файла TTS \"{config.data.tts_db}\"")
+            logging.error(f"Ошибка загрузки файла TTS \"{tts_db}\"")
             raise e
 
     def __load_main_db(self, config: Config):
+        main_db = abs_path(config.data.main_db)
+
         try:
-            if not os.path.isfile(config.data.main_db):
-                return
+            if not os.path.isfile(main_db):
+                return None
 
             logging.info(f"Загрузка базы трезвучий")
-            df = pd.read_csv(config.data.main_db, sep=SEP, encoding=UTF8, index_col="id")
+            df = pd.read_csv(main_db, sep=SEP, encoding=UTF8, index_col="id")
             data = list[MusicNoteSequence]()
 
             for index, row in df.iterrows():
@@ -108,8 +117,10 @@ class MainDB(metaclass=SingletonMeta):
                         logging.warning(f"Странный интервал {distance / 2:.1f} тонов:\n{row}")
             
             self.__data = data
+            self.__file = main_db
             self.clear_used()
+
             logging.info(f"База трезвучий загружена")
         except Exception as e:
-            logging.error(f"Ошибка загрузки базы трезвучий \"{config.data.main_db}\"")
+            logging.error(f"Ошибка загрузки базы трезвучий \"{main_db}\"")
             raise e

@@ -4,18 +4,18 @@ import logging.handlers
 import os
 import ssl
 import logging
-import meldicthandlers as md
-import chordgen
 from aiohttp import web
 from aliceio.webhook.aiohttp_server import OneSkillAiohttpRequestHandler, setup_application
 from aliceio import Skill
-from myconstants import *
-from filewatcher import start_file_watcher
-from config import Config
 from watchdog.observers.api import BaseObserver
-from voicemenu import VoiceMenu
-from maindb import MainDB
-
+from .filewatcher import start_file_watcher
+from .config import Config
+from .voicemenu import VoiceMenu
+from .engine.maindb import MainDB
+from .chordgen import generate_audio
+from .engine.alice.alice_handlers import dispatcher
+from .myconstants import *
+from .abspath import abs_path
 
 def configure_logger() -> logging.Logger:
     # Создаем объект логгера
@@ -28,8 +28,8 @@ def configure_logger() -> logging.Logger:
         datefmt="%d.%m.%Y %H:%M:%S")
 
     # Создаем обработчик для записи лога в файл
-    os.makedirs("logs", exist_ok=True)
-    file_handler = logging.handlers.RotatingFileHandler("logs/skill.log", maxBytes=1024 * 1024, backupCount=5, encoding=UTF8)
+    os.makedirs(abs_path("logs"), exist_ok=True)
+    file_handler = logging.handlers.RotatingFileHandler(abs_path("logs/skill.log"), maxBytes=1024 * 1024, backupCount=5, encoding=UTF8)
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
@@ -46,21 +46,21 @@ def generate_sounds():
     config = Config()
 
     # генерируем отсутствующие звуки
-    os.makedirs(config.data.websounds_folder, exist_ok=True)
+    os.makedirs(abs_path(config.data.websounds_folder), exist_ok=True)
     count = 0
 
     for noteseq in MainDB():
         try:
-            logging.info(f"Генерация звука для {noteseq}")
-            if chordgen.generate_audio(noteseq, replace_existing=False):
+            logging.info(f"Генерация аудио для {noteseq}")
+            if generate_audio(noteseq, replace_existing=False):
                 count += 1
-                logging.info(f"Звук для {noteseq} сгенерирован")
+                logging.info(f"Аудио для {noteseq} сгенерировано")
         except Exception as e:
-            logging.error(f"Ошибка во время генерации звука для {noteseq}", exc_info=e)
+            logging.error(f"Ошибка во время генерации аудио для {noteseq}", exc_info=e)
             continue
 
     if count > 0:
-        logging.info(f"Всего звуков сгенерировано: {count}")
+        logging.info(f"Всего аудиофайлов сгенерировано: {count}")
 
 
 def main() -> None:
@@ -71,27 +71,27 @@ def main() -> None:
     try:
         # Настройка логгера
         configure_logger()
-        
+
         logging.info("*** Запуск сервера Музыкального Диктанта ***")
 
         # Загрузка конфига (должна выполняться следующей после логгера)
-        config = Config.load(CONFIG_FILE)
-        cfg_watcher = start_file_watcher(CONFIG_FILE, Config.load)
+        config = Config.load_default()
+        cfg_watcher = start_file_watcher(config.file, Config.load)
 
         # Загрузка голосового меню
-        VoiceMenu.load(config.data.voice_menu)
-        vm_watcher = start_file_watcher(config.data.voice_menu, VoiceMenu.load)
+        vm = VoiceMenu.load(abs_path(config.data.voice_menu))
+        vm_watcher = start_file_watcher(vm.file, VoiceMenu.load)
 
         # Загрузка базы данных трезвучий
-        MainDB.load()
-        main_watcher = start_file_watcher(config.data.main_db, lambda _: MainDB.load())
+        maindb = MainDB.load()
+        main_watcher = start_file_watcher(maindb.file, lambda _: MainDB.load())
 
         # Генерация звуков
         if config.data.upload_websounds:
             generate_sounds()
 
         # Создание экземпляра навыка Алисы 
-        logging.info(f"Skill-ID: {config.skill.id}, OAuth-Token: {config.skill.oauth_token}")
+        logging.info(f"Alice Skill-ID: {config.skill.id}, OAuth-Token: {config.skill.oauth_token}")
         skill = Skill(skill_id=config.skill.id, oauth_token=config.skill.oauth_token)
 
         logging.info(f"Запуск HTTP-сервера: http{'s' if config.network.ssl.enabled else ''}://{config.network.ip}:{config.network.port}/{config.network.path}")
@@ -103,9 +103,9 @@ def main() -> None:
             ssl_context.load_cert_chain(certfile=config.network.ssl.certfile, keyfile=config.network.ssl.keyfile)
 
         app = web.Application()
-        requests_handler = OneSkillAiohttpRequestHandler(dispatcher=md.dispatcher, skill=skill)
+        requests_handler = OneSkillAiohttpRequestHandler(dispatcher=dispatcher, skill=skill)
         requests_handler.register(app, path=f"/{config.network.path}")
-        setup_application(app, md.dispatcher, skill=skill)
+        setup_application(app, dispatcher, skill=skill)
 
         # запускаем прослушивание порта по указанному ip
         web.run_app(app, host=config.network.ip, port=config.network.port, ssl_context=ssl_context)

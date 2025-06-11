@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from typing import Iterable
-from musicnote import MusicNote
+from .musicnote import MusicNote
 
 class MusicNoteSequence(Sequence):
     PRIMALOC_UNKNOWN = -1

@@ -1,15 +1,15 @@
 import os
 import logging
 import pandas as pd
-import chordgen
 from aliceio.types import FSInputFile
 from aliceio import Skill
-from singleton import SingletonMeta
-from config import Config
-from myconstants import *
-from musicnotesequence import MusicNoteSequence
+from ..musicnotesequence import MusicNoteSequence
+from ...singleton import SingletonMeta
+from ...config import Config
+from ...chordgen import OPUS_EXT
+from ...myconstants import *
 
-class YandexWebSounds(metaclass=SingletonMeta):
+class AliceWebSounds(metaclass=SingletonMeta):
     def __init__(self):
         self.__websounds = dict[str, str]()
 
@@ -58,7 +58,7 @@ class YandexWebSounds(metaclass=SingletonMeta):
         logging.info(f"Загрузка звуков в облачное хранилище навыка")
         config = Config()
 
-        for f in filter(lambda f: f.endswith(chordgen.OPUS_EXT), os.listdir(config.data.websounds_folder)):
+        for f in filter(lambda f: f.endswith(OPUS_EXT), os.listdir(config.data.websounds_folder)):
             try:
                 sound_file = os.path.join(config.data.websounds_folder, f)
                 # logging.info(f"Загрузка звука: {f}")

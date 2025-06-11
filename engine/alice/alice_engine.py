@@ -1,44 +1,23 @@
 from typing import Iterable
 from aliceio.types import AliceResponse, Response, Message, TextButton
-from musicnotesequence import MusicNoteSequence
-from musicnote import MusicNote
-from meldictenginebase import MelDictEngineBase
-from meldictlevels import MelDictLevelBase, DemoLevel, MissedNoteLevel, PrimaLocationLevel, CadenceLevel, ExamLevel
-from myfilters import CmdFilter
-from myconstants import *
-from maindb import MainDB
-from yandex_websounds import YandexWebSounds
-from voicemenu import VoiceMenu
+from .alice_websounds import AliceWebSounds
+from ..musicnotesequence import MusicNoteSequence
+from ..meldictengine import MelDictEngine
+from ..levels.base_level import MelDictLevelBase
+from ...myfilters import CmdFilter
+from ...myconstants import *
+from ...voicemenu import VoiceMenu
 
-class MelDictEngineAlice(MelDictEngineBase):
+class AliceEngine(MelDictEngine):
     def __init__(self, skill_id):
         super().__init__(skill_id)
-        self.__demo_level = DemoLevel(self)
-        self.__missed_note_level = MissedNoteLevel(self)
-        self.__cadence_level = CadenceLevel(self)
-        self.__prima_loc_level = PrimaLocationLevel(self)
-        self.__exam = ExamLevel(self, self.__missed_note_level, self.__prima_loc_level, self.__cadence_level)
-        self.__current_level = None
+
         self.__hamster = False
 
     @property
     def hamster(self): return self.__hamster
     @hamster.setter
     def hamster(self, value: bool): self.__hamster = value
-
-    @MelDictEngineBase.mode.setter
-    def mode(self, value: int):
-        self._mode = max(GameMode.UNKNOWN, value)
-        MainDB().clear_used()
-
-        match self._mode:
-            case GameMode.DEMO:
-                self.__current_level = None
-                self.__demo_level.reset()
-
-            case GameMode.EXAM:
-                self.__current_level = None
-                self.__exam.reset()
 
     def _is_help_button(self, button: TextButton) -> bool:
         return button and button.payload and button.payload.get("help", False) == True
@@ -66,12 +45,12 @@ class MelDictEngineAlice(MelDictEngineBase):
 
         match self.mode:
             case GameMode.DEMO:
-                level = self.__demo_level
+                level = self._demo_level
             case GameMode.TRAIN:
-                level = self.__current_level
+                level = self._current_level
                 back_mode = GameMode.TRAIN_MENU
             case GameMode.EXAM:
-                level = self.__exam
+                level = self._exam
 
             case GameMode.MENU | GameMode.INIT:
                 back_mode = None
@@ -81,93 +60,19 @@ class MelDictEngineAlice(MelDictEngineBase):
 
             case GameMode.TRAIN_MENU:
                 set_level_key = "set_level"
-                yield TextButton(title=vm.levels.missed_note.name.text, payload={ set_level_key: self.__missed_note_level.id })
-                yield TextButton(title=vm.levels.prima_location.name.text, payload={ set_level_key: self.__prima_loc_level.id })
-                yield TextButton(title=vm.levels.cadence.name.text, payload={ set_level_key: self.__cadence_level.id })
+                yield TextButton(title=vm.levels.missed_note.name.text, payload={ set_level_key: self._missed_note_level.id })
+                yield TextButton(title=vm.levels.prima_location.name.text, payload={ set_level_key: self._prima_loc_level.id })
+                yield TextButton(title=vm.levels.cadence.name.text, payload={ set_level_key: self._cadence_level.id })
 
         if level and not level.finished:
             for btn in level.get_buttons():
                 yield btn
-            yield TextButton(title=VoiceMenu().levels.repeat_buttons().text, payload={ "repeat": True })
+            yield TextButton(title=vm.root.repeat_buttons().text, payload={ "repeat": True })
         elif not level:
             yield TextButton(title=vm.main_menu.rules.button, payload={ "help": True })
 
         if back_mode is not None:
-            yield TextButton(title=vm.main_menu.back.button, payload={ set_mode_key: back_mode })
-
-    def get_stats_reply(self) -> tuple[str, str]:
-        match self.mode:
-            case GameMode.DEMO | GameMode.TRAIN:
-                text, tts = VoiceMenu().root.level_not_scored()
-            case _:
-                text, tts = self.__exam.get_stats_reply() if self.__exam.started \
-                    else VoiceMenu().root.no_score()
-
-        return text, tts
-
-    def get_rules_reply(self) -> tuple[str, str]:
-        text, tts = VoiceMenu().main_menu.rules
-        return text, tts
-
-    def process_back_action(self) -> tuple[str, str]:
-        match self.mode:
-            case GameMode.MENU:
-                text, tts = VoiceMenu().root.no_way_back()
-                return text, tts
-            case GameMode.DEMO | GameMode.TRAIN_MENU | GameMode.EXAM:
-                self.mode = GameMode.MENU
-            case GameMode.TRAIN:
-                self.mode = GameMode.TRAIN_MENU
-            case _:
-                text, tts = VoiceMenu().root.dont_understand()
-                return text, tts
-
-        text, tts = self.get_reply()
-        return text, tts
-
-    def get_reply(self) -> tuple[str, str]:
-        self._assert_mode()
-        level: MelDictLevelBase = None
-        main_db = MainDB()
-
-        match self.mode:
-            case GameMode.INIT:
-                noteseq = main_db.rnd(
-                    lambda ns:
-                        ns.is_vertical and (ns.is_chord_maj or ns.is_tonality_maj))
-
-                self.mode = GameMode.MENU
-                greet = VoiceMenu().main_menu.greetings(first_run=True)
-                text, tts = greet(noteseq = self.get_audio_tag(noteseq))
-                return text, tts
-
-            case GameMode.MENU: # основное меню
-                text, tts = VoiceMenu().main_menu.greetings()
-                return text, tts
-
-            case GameMode.TRAIN_MENU:
-                vm = VoiceMenu()
-                train_menu = vm.main_menu.train_menu(
-                    missed_note = vm.levels.missed_note.name,
-                    prima_location = vm.levels.prima_location.name,
-                    cadence = vm.levels.cadence.name)
-                return train_menu
-
-            case GameMode.DEMO:
-                level = self.__demo_level
-
-            case GameMode.TRAIN:
-                level = self.__current_level
-
-            case GameMode.EXAM:
-                level = self.__exam
-
-        if level:
-            text, tts = level.get_reply()
-            return text, tts
-
-        text, tts = VoiceMenu().root.dont_understand()
-        return text, tts
+            yield TextButton(title=vm.root.back_buttons().text, payload={ set_mode_key: back_mode })
 
     def process_user_reply(self, message: Message = None, mode_str: str = None) -> tuple[str, str]:
         self._assert_mode()
@@ -186,11 +91,11 @@ class MelDictEngineAlice(MelDictEngineBase):
 
             case GameMode.TRAIN_MENU:
                 if CmdFilter.passed(message.command, ("пропущенн", "1"), exclude=("нет", "не", )):
-                    new_level_id = self.__missed_note_level.id
+                    new_level_id = self._missed_note_level.id
                 elif CmdFilter.passed(message.command, ("тоник", "2"), exclude=("нет", "не", "тонир", "тонал")):
-                    new_level_id = self.__prima_loc_level.id
+                    new_level_id = self._prima_loc_level.id
                 elif message and CmdFilter.passed(message.command, ("каденци", "3"), exclude=("нет", "не", )):
-                    new_level_id = self.__cadence_level.id
+                    new_level_id = self._cadence_level.id
 
         return self.__process_action(
             new_mode=new_mode,
@@ -232,23 +137,25 @@ class MelDictEngineAlice(MelDictEngineBase):
                 if new_mode: # нажата кнопка назад из меню тренировки
                     return self.get_reply()
 
-            case GameMode.DEMO: level = self.__demo_level
-            case GameMode.TRAIN: level = self.__current_level
-            case GameMode.EXAM: level = self.__exam
+            case GameMode.DEMO: level = self._demo_level
+            case GameMode.TRAIN: level = self._current_level
+            case GameMode.EXAM: level = self._exam
 
             case GameMode.TRAIN_MENU:
-                if new_level_id == self.__missed_note_level.id:
-                    level = self.__missed_note_level
-                elif new_level_id == self.__prima_loc_level.id:
-                    level = self.__prima_loc_level
-                elif new_level_id == self.__cadence_level.id:
-                    level = self.__cadence_level
+                if new_level_id == self._missed_note_level.id:
+                    level = self._missed_note_level
+                elif new_level_id == self._prima_loc_level.id:
+                    level = self._prima_loc_level
+                elif new_level_id == self._cadence_level.id:
+                    level = self._cadence_level
                 elif new_mode: # нажата кнопка назад из уровня
                     return self.get_reply()
 
                 if level:
                     self.mode = GameMode.TRAIN
-                    self.__current_level = level
+                    self._current_level = level
+
+        text = tts = None
 
         if level is None:
             text, tts = VoiceMenu().root.dont_understand()
@@ -256,9 +163,9 @@ class MelDictEngineAlice(MelDictEngineBase):
 
         if new_level_id or new_mode: # уровень только что выбран
             level.reset()
-
-        text, tts = level.get_reply() if new_level_id or new_mode \
-            else  level.process_user_reply(message, button)
+            text, tts = level.get_reply()
+        else:
+            text, tts = level.process_user_reply(message, button)
 
         if level.finished:
             vm = VoiceMenu()
@@ -275,12 +182,12 @@ class MelDictEngineAlice(MelDictEngineBase):
             self.mode = GameMode.MENU
             menu_text, menu_tts = self.get_reply()
 
-            text = self.format_text(text, complete_text, stat_text, menu_text, sep="\n\n")
+            text = self.format_text(text, complete_text, stat_text, menu_text, sep="\n")
             tts = self.format_tts(tts, complete_tts, stat_tts, menu_tts, sep=".")
         return text, tts
 
     def get_audio_tag(self, nsf: str | MusicNoteSequence) -> str:
-        cloud_id = YandexWebSounds().get_cloud_id(nsf)
+        cloud_id = AliceWebSounds().get_cloud_id(nsf)
         return f'<speaker audio="dialogs-upload/{self.skill_id}/{cloud_id}.opus">' if cloud_id else ""
 
     def get_hamster_tag(self) -> str:

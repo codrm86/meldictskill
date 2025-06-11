@@ -2,13 +2,13 @@ import os
 import fluidsynth
 import pydub
 import wave
-import logging
 import numpy as np
 from typing import Iterable
-from musicnotesequence import MusicNoteSequence
-from musicnote import MusicNote
-from config import Config
-from myconstants import *
+from .engine.musicnotesequence import MusicNoteSequence
+from .engine.musicnote import MusicNote
+from .config import Config
+from .myconstants import *
+from .abspath import abs_path
 
 def create_audio(opus_file: str,
                  wav_file: str,
@@ -80,7 +80,7 @@ def generate_audio(noteseq: MusicNoteSequence, replace_existing = True) -> bool:
     config = Config()
 
     def file_name(ext):
-        return os.path.join(config.data.websounds_folder, f"{noteseq.file_name}{ext}")
+        return os.path.join(abs_path(config.data.websounds_folder), f"{noteseq.file_name}{ext}")
 
     opus_file = file_name(OPUS_EXT)
 
@@ -90,8 +90,8 @@ def generate_audio(noteseq: MusicNoteSequence, replace_existing = True) -> bool:
     create_audio(
             opus_file,
             file_name(WAV_EXT),
-            config.data.sound_font,
+            abs_path(config.data.sound_font),
             noteseq.is_vertical,
             *noteseq,
-            delete_wav=True)
+            delete_wav=False)
     return True
