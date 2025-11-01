@@ -5,11 +5,11 @@ import traceback as tb
 from aliceio import Dispatcher, F, Skill
 from aliceio.fsm.context import FSMContext
 from aliceio.types import AliceResponse, Response, ErrorEvent, Message, TextButton
-from .alice_engine import AliceEngine
-from ...config import Config
-from ...voicemenu import VoiceMenu
-from .alice_websounds import AliceWebSounds
-from ...myconstants import *
+from engine.alice.alice_engine import AliceEngine
+from engine.alice.alice_websounds import AliceWebSounds
+from config import Config
+from voicemenu import VoiceMenu
+from myconstants import *
 
 dispatcher = Dispatcher()
 rlock = threading.RLock()
@@ -69,7 +69,11 @@ async def on_startup(skill: Skill, dispatcher: Dispatcher) -> None:
     try:
         if Config().data.upload_websounds == True:
             status = await skill.status()
-            logging.info(f"Квоты Алисы: {status.images.quota.used}/{status.images.quota.total*100:.0f} изображений, {status.sounds.quota.used}/{status.sounds.quota.total*100:.0f} звуков")
+
+            if status.images.quota.total > 0 and status.sounds.quota.total > 0:
+                img_used = status.images.quota.used / status.images.quota.total * 100
+                snd_used = status.sounds.quota.used / status.sounds.quota.total * 100
+                logging.info(f"Квоты Алисы: использовано {img_used:.1f}% изображений, {snd_used:.1f}% звуков")
             await AliceWebSounds.upload_websounds(skill)
 
         # загрузка базы облачных идентификаторов звуков

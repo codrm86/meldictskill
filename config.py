@@ -2,10 +2,10 @@ import json
 import logging
 from typing import ClassVar
 from pydantic import BaseModel, Field
-from .myconstants import *
-from .singleton import BaseModelSingletonMeta
-from .filewatcher import *
-from .abspath import abs_path
+from myconstants import *
+from singleton import BaseModelSingletonMeta
+from filewatcher import *
+from abspath import abs_path
 
 # Pydantic модели конфигов
 class SSLConfig(BaseModel):

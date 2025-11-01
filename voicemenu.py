@@ -4,9 +4,9 @@ import json
 from typing import Optional, TypeVar, Generic, ClassVar
 from pydantic import RootModel, BaseModel, Field
 from collections.abc import Callable
-from .singleton import BaseModelSingletonMeta
-from .extended_formatter import ExtendedFormatter
-from .myconstants import *
+from singleton import BaseModelSingletonMeta
+from extended_formatter import ExtendedFormatter
+from myconstants import *
 
 
 T = TypeVar('T')

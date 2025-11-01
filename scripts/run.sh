@@ -2,8 +2,8 @@
 
 # Убедитесь, что имя виртуального окружения указано правильно
 SKILL_DIR=$(dirname $(dirname $(realpath "$0")))
-VENV_DIR="$SKILL_DIR/.venv"  # Путь к директории виртуального окружения
-SCRIPT_NAME="$(basename $SKILL_DIR).main"  # Имя Python-скрипта для запуска
+VENV_DIR="$SKILL_DIR/venv"  # Путь к директории виртуального окружения
+SCRIPT_NAME="main"  # Имя Python-скрипта для запуска
 REQUIREMENTS_FILE="$SKILL_DIR/requirements.txt"  # Файл с зависимостями
 CREATE_VENV=false  # Флаг создания виртуального окружения
 
@@ -78,8 +78,7 @@ else
   # Запускаем Python-скрипт
   echo "Запуск Python-скрипта: $SCRIPT_NAME"
   cd $SKILL_DIR
-  cd ..
-  $VENV_DIR/bin/python3.12 -m "$SCRIPT_NAME"
+  $VENV_DIR/bin/python3.12 -m $SCRIPT_NAME
 
   if [ $? -eq 0 ]; then
     echo "Python-скрипт успешно выполнен."

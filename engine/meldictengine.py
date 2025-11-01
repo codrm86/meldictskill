@@ -1,13 +1,13 @@
-from .levels.demo_level import DemoLevel
-from .levels.missed_note_level import MissedNoteLevel
-from .levels.prima_location_level import PrimaLocationLevel
-from .levels.cadence_level import CadenceLevel
-from .levels.exam_level import ExamLevel
-from .meldictenginebase import MelDictEngineBase
-from .maindb import MainDB
-from .levels.base_level import MelDictLevelBase
-from ..myconstants import *
-from ..voicemenu import VoiceMenu
+from engine.levels.base_level import MelDictLevelBase
+from engine.levels.demo_level import DemoLevel
+from engine.levels.missed_note_level import MissedNoteLevel
+from engine.levels.prima_location_level import PrimaLocationLevel
+from engine.levels.cadence_level import CadenceLevel
+from engine.levels.exam_level import ExamLevel
+from engine.meldictenginebase import MelDictEngineBase
+from engine.maindb import MainDB
+from myconstants import *
+from voicemenu import VoiceMenu
 
 class MelDictEngine(MelDictEngineBase):
     def __init__(self, skill_id):

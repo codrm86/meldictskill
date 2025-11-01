@@ -3,11 +3,12 @@ import logging
 import pandas as pd
 from aliceio.types import FSInputFile
 from aliceio import Skill
-from ..musicnotesequence import MusicNoteSequence
-from ...singleton import SingletonMeta
-from ...config import Config
-from ...chordgen import OPUS_EXT
-from ...myconstants import *
+from engine.musicnotesequence import MusicNoteSequence
+from singleton import SingletonMeta
+from config import Config
+from chordgen import OPUS_EXT
+from myconstants import *
+from abspath import abs_path
 
 class AliceWebSounds(metaclass=SingletonMeta):
     def __init__(self):
@@ -58,11 +59,10 @@ class AliceWebSounds(metaclass=SingletonMeta):
         logging.info(f"Загрузка звуков в облачное хранилище навыка")
         config = Config()
 
-        for f in filter(lambda f: f.endswith(OPUS_EXT), os.listdir(config.data.websounds_folder)):
+        websounds_folder = abs_path(config.data.websounds_folder)
+        for f in filter(lambda f: f.endswith(OPUS_EXT), os.listdir(websounds_folder)):
             try:
-                sound_file = os.path.join(config.data.websounds_folder, f)
-                # logging.info(f"Загрузка звука: {f}")
-
+                sound_file = os.path.join(websounds_folder, f)
                 fsfile = FSInputFile(sound_file)
                 result = await skill.upload_sound(fsfile)
                 count += 1

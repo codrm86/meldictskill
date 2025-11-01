@@ -3,11 +3,11 @@ import logging
 import pandas as pd
 import random as rnd
 from typing import Callable, Iterable
-from .musicnotesequence import MusicNoteSequence
-from ..config import Config
-from ..singleton import SingletonMeta
-from ..myconstants import *
-from ..abspath import abs_path
+from engine.musicnotesequence import MusicNoteSequence
+from config import Config
+from singleton import SingletonMeta
+from myconstants import *
+from abspath import abs_path
 
 class MainDB(metaclass=SingletonMeta):
     def __init__(self):

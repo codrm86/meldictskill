@@ -8,14 +8,14 @@ from aiohttp import web
 from aliceio.webhook.aiohttp_server import OneSkillAiohttpRequestHandler, setup_application
 from aliceio import Skill
 from watchdog.observers.api import BaseObserver
-from .filewatcher import start_file_watcher
-from .config import Config
-from .voicemenu import VoiceMenu
-from .engine.maindb import MainDB
-from .chordgen import generate_audio
-from .engine.alice.alice_handlers import dispatcher
-from .myconstants import *
-from .abspath import abs_path
+from filewatcher import start_file_watcher
+from config import Config
+from voicemenu import VoiceMenu
+from engine.maindb import MainDB
+from chordgen import generate_audio
+from engine.alice.alice_handlers import dispatcher
+from myconstants import *
+from abspath import abs_path
 
 def configure_logger() -> logging.Logger:
     # Создаем объект логгера
@@ -90,7 +90,8 @@ def main() -> None:
         if config.data.upload_websounds:
             generate_sounds()
 
-        # Создание экземпляра навыка Алисы 
+        # Создание экземпляра навыка Алисы
+        # oauth-token resolve information: https://yandex.ru/dev/dialogs/alice/doc/ru/resource-upload#auth
         logging.info(f"Alice Skill-ID: {config.skill.id}, OAuth-Token: {config.skill.oauth_token}")
         skill = Skill(skill_id=config.skill.id, oauth_token=config.skill.oauth_token)
 

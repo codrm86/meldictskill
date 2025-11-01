@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Iterable
 from aliceio.types import Message, TextButton
-from .musicnotesequence import MusicNoteSequence
-from ..myconstants import *
+from engine.musicnotesequence import MusicNoteSequence
+from myconstants import *
 
 class MelDictEngineBase(ABC):
     def __init__(self, skill_id: str):

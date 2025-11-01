@@ -3,9 +3,9 @@ from typing import Any
 from pythonjsonlogger import jsonlogger
 from aliceio import Skill
 from aliceio.webhook.yandex_functions import OneSkillYandexFunctionsRequestHandler, RuntimeContext
-from .engine.alice.alice_handlers import dispatcher
-from .config import Config
-from .myconstants import *
+from engine.alice.alice_handlers import dispatcher
+from config import Config
+from myconstants import *
 
 class YcLoggingFormatter(jsonlogger.JsonFormatter):
     def add_fields(self, log_record, record, message_dict):

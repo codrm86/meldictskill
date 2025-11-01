@@ -1,11 +1,11 @@
 from aliceio.types import Message, TextButton
-from .base_level import MelDictLevelBase
-from .missed_note_level import MissedNoteLevel
-from .prima_location_level import PrimaLocationLevel
-from .cadence_level import CadenceLevel
-from ..meldictenginebase import MelDictEngineBase
-from ...voicemenu import VoiceMenu, GameLevel
-from ...myconstants import *
+from engine.levels.base_level import MelDictLevelBase
+from engine.levels.missed_note_level import MissedNoteLevel
+from engine.levels.prima_location_level import PrimaLocationLevel
+from engine.levels.cadence_level import CadenceLevel
+from engine.meldictenginebase import MelDictEngineBase
+from voicemenu import VoiceMenu, GameLevel
+from myconstants import *
 
 class ExamLevel(MelDictLevelBase):
     def __init__(self,

@@ -1,13 +1,13 @@
 import random as rnd
 from aliceio.types import Message, TextButton
 from typing import Iterable
-from .base_level import MelDictLevelBase, NoReplyError
-from ..musicnotesequence import MusicNoteSequence
-from ..meldictenginebase import MelDictEngineBase
-from ..maindb import MainDB
-from ...config import Config
-from ...voicemenu import VoiceMenu, GameLevel
-from ...myconstants import *
+from engine.levels.base_level import MelDictLevelBase, NoReplyError
+from engine.musicnotesequence import MusicNoteSequence
+from engine.meldictenginebase import MelDictEngineBase
+from engine.maindb import MainDB
+from config import Config
+from voicemenu import VoiceMenu, GameLevel
+from myconstants import *
 
 class CadenceLevel(MelDictLevelBase):
     def __init__(self, engine: MelDictEngineBase, first_run: bool = True):

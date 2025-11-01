@@ -3,9 +3,9 @@ from aliceio.types import Message, TextButton
 from aliceio.types.number_entity import NumberEntity
 from abc import ABC, abstractmethod
 from typing import Iterable
-from ..meldictenginebase import MelDictEngineBase
-from ...voicemenu import VoiceMenu, GameLevel
-from ...myconstants import *
+from engine.meldictenginebase import MelDictEngineBase
+from voicemenu import VoiceMenu, GameLevel
+from myconstants import *
 
 class NoReplyError(ValueError):
     def __init__(self, msg: str = "Нет реплики"):

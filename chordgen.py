@@ -4,11 +4,11 @@ import pydub
 import wave
 import numpy as np
 from typing import Iterable
-from .engine.musicnotesequence import MusicNoteSequence
-from .engine.musicnote import MusicNote
-from .config import Config
-from .myconstants import *
-from .abspath import abs_path
+from engine.musicnotesequence import MusicNoteSequence
+from engine.musicnote import MusicNote
+from config import Config
+from myconstants import *
+from abspath import abs_path
 
 def create_audio(opus_file: str,
                  wav_file: str,
@@ -27,7 +27,7 @@ def create_audio(opus_file: str,
     assert note_sequence
 
     synth: fluidsynth.Synth = None
-    samples = []
+    samples = np.array([], dtype=np.float32)
 
     try:
         synth = fluidsynth.Synth(samplerate=samplerate)
@@ -63,11 +63,18 @@ def create_audio(opus_file: str,
         if synth: synth.delete()
 
     try:
+        # Multiply float samples by the amplitude multiplier, then clip
+        # to the int16 range before converting to int16. Clipping prevents
+        # overflow/wrap-around when writing PCM16 WAV frames.
+        samples *= amplitude_multiplier
+        samples = np.clip(samples, -32768.0, 32767.0)
+        samples = samples.astype(np.int16)
+
         with wave.open(wav_file, mode="wb") as wav:
             wav.setnchannels(2)
             wav.setsampwidth(2) # int16, 2 bytes
             wav.setframerate(samplerate)
-            wav.writeframes(fluidsynth.raw_audio_string(samples * amplitude_multiplier)) # записываем сэмплы с увеличением амплитуды
+            wav.writeframes(samples.tobytes()) # записываем сэмплы с увеличением амплитуды
 
         segment = pydub.AudioSegment.from_wav(wav_file)
         segment.export(opus_file, format="opus", codec="libopus")
@@ -93,5 +100,5 @@ def generate_audio(noteseq: MusicNoteSequence, replace_existing = True) -> bool:
             abs_path(config.data.sound_font),
             noteseq.is_vertical,
             *noteseq,
-            delete_wav=False)
+            delete_wav=True)
     return True

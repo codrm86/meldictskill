@@ -1,12 +1,12 @@
 from typing import Iterable
 from aliceio.types import AliceResponse, Response, Message, TextButton
-from .alice_websounds import AliceWebSounds
-from ..musicnotesequence import MusicNoteSequence
-from ..meldictengine import MelDictEngine
-from ..levels.base_level import MelDictLevelBase
-from ...myfilters import CmdFilter
-from ...myconstants import *
-from ...voicemenu import VoiceMenu
+from engine.alice.alice_websounds import AliceWebSounds
+from engine.musicnotesequence import MusicNoteSequence
+from engine.meldictengine import MelDictEngine
+from engine.levels.base_level import MelDictLevelBase
+from myfilters import CmdFilter
+from myconstants import *
+from voicemenu import VoiceMenu
 
 class AliceEngine(MelDictEngine):
     def __init__(self, skill_id):
