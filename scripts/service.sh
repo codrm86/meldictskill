@@ -5,10 +5,6 @@ BASE_DIR="$(dirname $(realpath "$0"))"
 SCRIPT_PATH="$BASE_DIR/run.sh"
 SERVICE_FILE="/etc/systemd/system/$SERVICE_NAME.service"
 
-echo "Запуск скрипта: $0"
-echo "Файл скрипта для запуска: $SKILL_DIR"
-echo "Рабочий каталог: $PWD"
-
 # Функция отображения справочной информации
 show_help() {
   echo "Использование: $0 [опции]"

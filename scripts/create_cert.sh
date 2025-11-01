@@ -1,7 +1,12 @@
 #!/bin/bash
 
 # Путь к файлу конфигурации
-CONFIG_FILE="config.json"
+SKILL_DIR=$(dirname $(dirname $(realpath "$0")))  # Путь к директории навыка
+CONFIG_FILE="$SKILL_DIR/config.json"
+
+echo "Запуск скрипта:    $0"
+echo "Папка навыка:      $SKILL_DIR"
+echo "Файл конфигурации: $CONFIG_FILE"
 
 # Проверка существования файла конфигурации
 if [ ! -f "$CONFIG_FILE" ]; then
@@ -28,8 +33,8 @@ jq '.network.ssl.enabled = true' "$CONFIG_FILE" > tmp.$$.json && mv tmp.$$.json 
 
 
 # Получение имён файлов сертификатов сертификатов из конфига
-CERTFILE=$(jq -r '.network.ssl.certfile' "$CONFIG_FILE")
-KEYFILE=$(jq -r '.network.ssl.keyfile' "$CONFIG_FILE")
+CERTFILE="$SKILL_DIR/$(jq -r '.network.ssl.certfile' "$CONFIG_FILE")"
+KEYFILE="$SKILL_DIR/$(jq -r '.network.ssl.keyfile' "$CONFIG_FILE")"
 
 if [ -z "$CERTFILE" ] || [ -z "$KEYFILE" ]; then
   echo "Ошибка: Не указаны пути к сертификату и ключу в конфигурации."

@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Убедитесь, что имя виртуального окружения указано правильно
-SKILL_DIR=$(dirname $(dirname $(realpath "$0")))
+SKILL_DIR=$(dirname $(dirname $(realpath "$0")))  # Путь к директории навыка
 VENV_DIR="$SKILL_DIR/venv"  # Путь к директории виртуального окружения
 SCRIPT_NAME="main"  # Имя Python-скрипта для запуска
 REQUIREMENTS_FILE="$SKILL_DIR/requirements.txt"  # Файл с зависимостями
@@ -9,6 +8,7 @@ CREATE_VENV=false  # Флаг создания виртуального окру
 
 echo "Запуск скрипта: $0"
 echo "Папка навыка:   $SKILL_DIR"
+echo "Создать venv:   $CREATE_VENV"
 
 # Разбор аргументов
 for arg in "$@"
